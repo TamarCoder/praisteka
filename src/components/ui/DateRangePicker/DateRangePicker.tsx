@@ -43,6 +43,8 @@ export function DateRangePicker({
   const [month, setMonth] = useState({ y: 0, m: 0 });
   const [today, setToday] = useState("");
   const popRef = useRef<HTMLDivElement>(null);
+  // სათაურზე დაჭერა: დღეები → თვეები → წლები; არჩევა უკან აბრუნებს
+  const [view, setView] = useState<"days" | "months" | "years">("days");
   const [place, setPlace] = useState<CSSProperties>({});
   const close = useCallback(() => setOpen(false), []);
   useDismiss(ref, open, close, popRef);
@@ -78,10 +80,13 @@ export function DateRangePicker({
       window.removeEventListener("resize", place);
       window.removeEventListener("scroll", place, true);
     };
-  }, [open, month]);
+  }, [open, month, view]);
+
+  const yearsFrom = month.y - (month.y % 12);
 
   const toggle = () => {
     if (!open) {
+      setView("days");
       const now = new Date();
       const start = value.from ? new Date(value.from) : now;
       setMonth({ y: start.getFullYear(), m: start.getMonth() });
@@ -110,10 +115,14 @@ export function DateRangePicker({
   };
 
   const shift = (step: number) =>
-    setMonth(({ y, m }) => ({
-      y: y + Math.floor((m + step) / 12),
-      m: (m + step + 12) % 12,
-    }));
+    view === "years"
+      ? setMonth(({ y, m }) => ({ y: y + step * 12, m }))
+      : view === "months"
+        ? setMonth(({ y, m }) => ({ y: y + step, m }))
+        : setMonth(({ y, m }) => ({
+            y: y + Math.floor((m + step) / 12),
+            m: (m + step + 12) % 12,
+          }));
 
   const text = value.from
     ? single
@@ -173,9 +182,25 @@ export function DateRangePicker({
               >
                 ‹
               </button>
-              <span
+              <button
+                type="button"
                 className={styles.month}
-              >{`${labels.months[month.m]} ${month.y}`}</span>
+                onClick={() =>
+                  setView(
+                    view === "days"
+                      ? "months"
+                      : view === "months"
+                        ? "years"
+                        : "days",
+                  )
+                }
+              >
+                {view === "days"
+                  ? `${labels.months[month.m]} ${month.y}`
+                  : view === "months"
+                    ? month.y
+                    : `${yearsFrom} – ${yearsFrom + 11}`}
+              </button>
               <button
                 type="button"
                 className={styles.nav}
@@ -185,38 +210,80 @@ export function DateRangePicker({
                 ›
               </button>
             </div>
-            <div className={styles.grid} onPointerLeave={() => setHover("")}>
-              {labels.weekdays.map((w) => (
-                <span key={w} className={styles.weekday}>
-                  {w}
-                </span>
-              ))}
-              {monthDays(month.y, month.m).map((d, i) => {
-                if (!d) return <span key={`e${i}`} />;
-                const day = iso(month.y, month.m, d);
-                const edge = day === lo || day === hi;
-                const inside = !!lo && !!hi && day > lo && day < hi;
-                return (
+            {view === "months" && (
+              <div className={styles.pickGrid}>
+                {labels.months.map((name, m) => (
                   <button
-                    key={day}
+                    key={name}
                     type="button"
-                    className={[
-                      styles.day,
-                      inside && styles.inside,
-                      edge && styles.edge,
-                      day === today && styles.today,
-                    ]
+                    className={[styles.pickCell, m === month.m && styles.edge]
                       .filter(Boolean)
                       .join(" ")}
-                    aria-pressed={edge}
-                    onPointerEnter={() => picking && setHover(day)}
-                    onClick={() => pick(day)}
+                    onClick={() => {
+                      setMonth(({ y }) => ({ y, m }));
+                      setView("days");
+                    }}
                   >
-                    {d}
+                    {name}
                   </button>
-                );
-              })}
-            </div>
+                ))}
+              </div>
+            )}
+            {view === "years" && (
+              <div className={styles.pickGrid}>
+                {Array.from({ length: 12 }, (_, i) => yearsFrom + i).map(
+                  (y) => (
+                    <button
+                      key={y}
+                      type="button"
+                      className={[styles.pickCell, y === month.y && styles.edge]
+                        .filter(Boolean)
+                        .join(" ")}
+                      onClick={() => {
+                        setMonth(({ m }) => ({ y, m }));
+                        setView("months");
+                      }}
+                    >
+                      {y}
+                    </button>
+                  ),
+                )}
+              </div>
+            )}
+            {view === "days" && (
+              <div className={styles.grid} onPointerLeave={() => setHover("")}>
+                {labels.weekdays.map((w) => (
+                  <span key={w} className={styles.weekday}>
+                    {w}
+                  </span>
+                ))}
+                {monthDays(month.y, month.m).map((d, i) => {
+                  if (!d) return <span key={`e${i}`} />;
+                  const day = iso(month.y, month.m, d);
+                  const edge = day === lo || day === hi;
+                  const inside = !!lo && !!hi && day > lo && day < hi;
+                  return (
+                    <button
+                      key={day}
+                      type="button"
+                      className={[
+                        styles.day,
+                        inside && styles.inside,
+                        edge && styles.edge,
+                        day === today && styles.today,
+                      ]
+                        .filter(Boolean)
+                        .join(" ")}
+                      aria-pressed={edge}
+                      onPointerEnter={() => picking && setHover(day)}
+                      onClick={() => pick(day)}
+                    >
+                      {d}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
             {value.from && (
               <button
                 type="button"

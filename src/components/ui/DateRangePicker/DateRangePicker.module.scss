@@ -70,7 +70,40 @@
   margin-bottom: sp(2);
 }
 
-.month { @include text(body-strong); }
+.month {
+  @include transition(background-color);
+  padding: sp(1) sp(3);
+  border: none;
+  border-radius: $radius;
+  background: transparent;
+  color: c(ink);
+  cursor: pointer;
+  @include text(body-strong);
+
+  &:hover { background: c(tab); }
+  &:focus-visible { @include focus-ring; }
+}
+
+// თვეების / წლების არჩევა — 3 სვეტი
+.pickGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: sp(1);
+}
+
+.pickCell {
+  @include transition(background-color, color);
+  height: 40px;
+  border: none;
+  border-radius: $radius;
+  background: transparent;
+  color: c(ink);
+  cursor: pointer;
+  @include text(small);
+
+  &:hover { background: c(tab); }
+  &:focus-visible { @include focus-ring; }
+}
 
 .nav {
   @include transition(background-color);
