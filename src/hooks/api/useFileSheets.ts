@@ -1,10 +1,10 @@
 "use client";
 
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import useSWR from "swr";
 import { API_ENDPOINTS } from "@/api/endpoints";
 import { filesApi } from "@/api/files";
-import type { SheetData } from "@/lib/readWorkbook";
+import { trimSheet, type SheetData } from "@/lib/readWorkbook";
 
 /** ბოლო ცვლილებიდან რამდენ ხანში ინახება */
 const SAVE_DELAY_MS = 800;
@@ -24,6 +24,8 @@ export function useFileSheets(fileId: string | undefined) {
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
   const latest = useRef<{ id: string; sheets: SheetData[] }>(undefined);
   const waiters = useRef<Waiter[]>([]);
+  // ძველ ატვირთვებში ცარიელი სტრიქონები/სვეტები — ეკრანზე აღარ ჩანს; პირველი რედაქტირება სუფთად შეინახავს
+  const sheets = useMemo(() => data?.sheets.map(trimSheet), [data]);
 
   const flush = useCallback(async () => {
     clearTimeout(timer.current);
@@ -46,13 +48,13 @@ export function useFileSheets(fileId: string | undefined) {
 
   const update = (index: number, sheet: SheetData) => {
     if (!data || !fileId) return;
-    const sheets = (latest.current?.id === fileId ? latest.current.sheets : data.sheets).map((s, i) => (i === index ? sheet : s));
-    latest.current = { id: fileId, sheets };
-    void mutate({ ...data, sheets }, { revalidate: false });
+    const next = (latest.current?.id === fileId ? latest.current.sheets : (sheets ?? data.sheets)).map((s, i) => (i === index ? sheet : s));
+    latest.current = { id: fileId, sheets: next };
+    void mutate({ ...data, sheets: next }, { revalidate: false });
     clearTimeout(timer.current);
     timer.current = setTimeout(() => void flush().catch(() => {}), SAVE_DELAY_MS);
     return new Promise<void>((resolve, reject) => waiters.current.push({ resolve, reject }));
   };
 
-  return { sheets: data?.sheets, loading: isLoading, update, flush };
+  return { sheets, loading: isLoading, update, flush };
 }

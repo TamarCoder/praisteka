@@ -169,3 +169,14 @@
     padding-left: ($w-sidebar-collapsed - 34px) * 0.5;
   }
 }
+
+// ლოგო → მთავარი (ფაილების ბოქსები)
+.home {
+  display: inline-flex;
+  min-width: 0;
+  border-radius: $radius;
+  color: inherit;
+  text-decoration: none;
+
+  &:focus-visible { @include focus-ring; }
+}

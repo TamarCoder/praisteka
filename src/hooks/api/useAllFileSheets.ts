@@ -1,6 +1,6 @@
 import useSWR from "swr";
 import { filesApi } from "@/api/files";
-import type { SheetData } from "@/lib/readWorkbook";
+import { trimSheet, type SheetData } from "@/lib/readWorkbook";
 import type { SearchSource } from "@/lib/searchFiles";
 import type { FileSummary } from "@/types/api";
 
@@ -11,7 +11,7 @@ import type { FileSummary } from "@/types/api";
 export function useAllFileSheets(files: FileSummary[], enabled: boolean, active?: { id: string; sheets: SheetData[] }) {
   const ids = files.map((f) => f.id);
   const { data, isLoading } = useSWR(enabled ? ["all-sheets", ...ids] : null, async () =>
-    Object.fromEntries(await Promise.all(ids.map(async (id) => [id, (await filesApi.get(id)).sheets] as const))),
+    Object.fromEntries(await Promise.all(ids.map(async (id) => [id, (await filesApi.get(id)).sheets.map(trimSheet)] as const))),
   );
 
   const sources: SearchSource[] = files.map((f) => ({

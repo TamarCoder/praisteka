@@ -25,6 +25,15 @@ const toPx = (c?: ColInfo) => {
 const toCell = (v: unknown): CellValue => (typeof v === "number" ? v : String(v ?? ""));
 const isFilled = (v: CellValue | undefined) => v !== undefined && String(v).trim() !== "";
 
+/** მხოლოდ შევსებული სტრიქონები და სვეტები; სიგანეები მიჰყვება დარჩენილ სვეტებს. ძველ ატვირთვებზეც (ჩატვირთვისას) */
+export function trimSheet(sheet: SheetData): SheetData {
+  const rows = sheet.rows.filter((row) => row.some(isFilled));
+  const width = Math.max(0, ...rows.map((r) => r.length));
+  const keep = Array.from({ length: width }, (_, i) => i).filter((i) => rows.some((r) => isFilled(r[i])));
+  const widths = sheet.widths && keep.map((i) => sheet.widths?.[i] ?? 0);
+  return { ...sheet, rows: rows.map((r) => keep.map((i) => r[i] ?? "")), widths: widths?.some(Boolean) ? widths : undefined };
+}
+
 export async function readWorkbook(file: File): Promise<SheetData[]> {
   // cellStyles — ამის გარეშე !cols (სიგანეები) არ იკითხება
   const book = read(await file.arrayBuffer(), { cellStyles: true });
@@ -32,12 +41,8 @@ export async function readWorkbook(file: File): Promise<SheetData[]> {
     const sheet = book.Sheets[name];
     const cols = (sheet["!cols"] ?? []) as (ColInfo | undefined)[];
     const raw = utils.sheet_to_json<unknown[]>(sheet, { header: 1, defval: "", blankrows: false }).map((row) => row.map(toCell));
-    // მხოლოდ შევსებული სტრიქონები და სვეტები — ცარიელები (ფორმატირებული, მაგრამ უმონაცემო) არ იტვირთება
-    const rows = raw.filter((row) => row.some(isFilled));
-    const width = Math.max(0, ...rows.map((r) => r.length));
-    const keep = Array.from({ length: width }, (_, i) => i).filter((i) => rows.some((r) => isFilled(r[i])));
-    const trimmed = rows.map((r) => keep.map((i) => r[i] ?? ""));
-    const widths = keep.map((i) => toPx(cols[i]) ?? 0);
-    return { name, rows: trimmed, widths: widths.some(Boolean) ? widths : undefined };
+    const width = Math.max(0, ...raw.map((r) => r.length));
+    const widths = Array.from({ length: width }, (_, i) => toPx(cols[i]) ?? 0);
+    return trimSheet({ name, rows: raw, widths });
   });
 }

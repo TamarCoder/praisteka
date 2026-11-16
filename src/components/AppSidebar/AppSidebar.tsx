@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/Button/Button";
@@ -49,7 +50,8 @@ export function AppSidebar() {
     );
 
   const fileParam = params.get("file");
-  const activeId = pathname === "/dashboard" ? (fileParam ?? tree.firstId) : undefined;
+  // ფაილი მონიშნულია მხოლოდ მაშინ, როცა გახსნილია (?file=)
+  const activeId = pathname === "/dashboard" ? (fileParam ?? undefined) : undefined;
   const label = collapsed ? prefs.expand : prefs.collapse;
   const toDelete = files.find((f) => f.id === deleteId);
 
@@ -69,7 +71,9 @@ export function AppSidebar() {
   return (
     <aside className={[styles.sidebar, collapsed && styles.collapsed].filter(Boolean).join(" ")}>
       <div className={styles.head}>
-        <Logo size={LogoSize.Md} withText={!collapsed} className={styles.logo} />
+        <Link href="/dashboard" className={styles.home} aria-label={t.filesTitle} onClick={() => setMenuOpen(false)}>
+          <Logo size={LogoSize.Md} withText={!collapsed} className={styles.logo} />
+        </Link>
         <Button
           variant={ButtonVariant.Ghost}
           size={ButtonSize.Sm}

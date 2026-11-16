@@ -63,7 +63,8 @@ export default function DashboardPage() {
 
   // ახლიდან ძველისკენ
   const sorted = [...(versions ?? [])].sort((a, b) => b.effectiveFrom.localeCompare(a.effectiveFrom));
-  const version = sorted.find((v) => v.id === fileParam) ?? sorted[0];
+  // ?file= არ არის — მთავარი: ფაილები ბოქსებად, არცერთი არ არის გახსნილი
+  const version = sorted.find((v) => v.id === fileParam);
   const company = companies?.find((c) => c.id === version?.companyId);
   const { sheets, loading, update, flush } = useFileSheets(version?.id);
   const sheetIndex = sheetPick.file === version?.id ? sheetPick.index : 0;
@@ -266,6 +267,20 @@ export default function DashboardPage() {
           )
         ) : loading ? (
           <Skeleton className={styles.loading} />
+        ) : !version && sorted.length ? (
+          <ul className={styles.grid} aria-label={t.filesTitle}>
+            {sorted.map((v) => (
+              <li key={v.id}>
+                <button type="button" className={styles.box} onClick={() => selectVersion(v.id)}>
+                  <span className={styles.boxIcon}>{StateIcon.upload}</span>
+                  <span className={styles.boxName} title={v.fileName}>{v.fileName}</span>
+                  <span className={styles.boxMeta}>
+                    {companies.find((c) => c.id === v.companyId)?.name} · {formatDate(v.effectiveFrom)}
+                  </span>
+                </button>
+              </li>
+            ))}
+          </ul>
         ) : !version ? (
           <AppEmpty title={t.empty.title} text={t.empty.text} actionLabel={t.upload} onAction={() => setUploadOpen(true)} />
         ) : (
