@@ -2,26 +2,29 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
 interface SessionState {
-  token: string | null;
+  /** შესულია? სესია თავად HttpOnly cookie-შია — JavaScript ვერ კითხულობს; აქ მხოლოდ ნიშანია */
+  signedIn: boolean;
   /** localStorage-იდან აღდგენა დასრულდა */
   hydrated: boolean;
-  signIn: (token: string) => void;
+  signIn: () => void;
   signOut: () => void;
 }
 
-// backend-ის სესიის token (POST /api/auth/login); მომხმარებლის მონაცემი — useMe
 export const useSessionStore = create<SessionState>()(
   persist(
     (set) => ({
-      token: null,
+      signedIn: false,
       hydrated: false,
-      signIn: (token) => set({ token }),
-      signOut: () => set({ token: null }),
+      signIn: () => set({ signedIn: true }),
+      signOut: () => set({ signedIn: false }),
     }),
     {
       name: "priceteka-session",
+      // v0-ში აქ token ინახებოდა — მიგრაცია მას localStorage-იდან შლის (ერთხელ თავიდან შესვლა)
+      version: 1,
+      migrate: () => ({ signedIn: false }),
       skipHydration: true,
-      partialize: ({ token }) => ({ token }),
+      partialize: ({ signedIn }) => ({ signedIn }),
       onRehydrateStorage: () => () => useSessionStore.setState({ hydrated: true }),
     },
   ),

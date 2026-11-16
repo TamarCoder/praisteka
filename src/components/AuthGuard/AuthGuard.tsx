@@ -7,7 +7,7 @@ import { useSessionStore } from "@/stores/session.store";
 /** შესვლის გარეშე ადმინის გვერდები არ ჩანს — გადაყავს /login-ზე */
 export function AuthGuard({ children }: { children: ReactNode }) {
   const router = useRouter();
-  const token = useSessionStore((s) => s.token);
+  const signedIn = useSessionStore((s) => s.signedIn);
   const hydrated = useSessionStore((s) => s.hydrated);
 
   useEffect(() => {
@@ -15,9 +15,9 @@ export function AuthGuard({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    if (hydrated && !token) router.replace("/login");
-  }, [hydrated, token, router]);
+    if (hydrated && !signedIn) router.replace("/login");
+  }, [hydrated, signedIn, router]);
 
-  // გვერდი ყოველთვის იხატება (Next.js-ის instant validation); token-ის გარეშე → /login
+  // გვერდი ყოველთვის იხატება (Next.js-ის instant validation); გაუსვლელი → /login
   return children;
 }

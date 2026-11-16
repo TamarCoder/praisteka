@@ -1,10 +1,9 @@
-import { getSessionToken, requireSession } from "@/lib/session";
+import { requireSession } from "@/lib/session";
 import type { ApiErrorResponse } from "@/types/api";
 
-// priceteka-backend-ის მისამართი — .env.local-ში NEXT_PUBLIC_API_URL
-export const API_URL = (
-  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000"
-).replace(/\/+$/u, "");
+// API იგივე დომენზეა: /api/* → priceteka-backend (next.config.ts rewrite, API_ORIGIN)
+// სესია HttpOnly cookie-შია და ბრაუზერი თავად აგზავნის — token კოდში არსად არის
+export const API_URL = "";
 
 export class ApiError extends Error {
   constructor(
@@ -25,18 +24,16 @@ const messageOf = (body: unknown, status: number) => {
     : `Request failed with status ${status}`;
 };
 
-/** ერთადერთი fetch აპში: token, JSON, 401 → სესიის წაშლა, შეცდომა → ApiError */
+/** ერთადერთი fetch აპში: cookie, JSON, 401 → გასვლა, შეცდომა → ApiError */
 export async function fetcher<T>(path: string, init?: RequestInit): Promise<T> {
   const headers = new Headers(init?.headers);
   headers.set("Accept", "application/json");
-  const token = getSessionToken();
-  if (token) headers.set("Authorization", `Bearer ${token}`);
   if (init?.body && !headers.has("Content-Type"))
     headers.set("Content-Type", "application/json");
 
   const res = await fetch(
     `${API_URL}${path.startsWith("/") ? path : `/${path}`}`,
-    { ...init, headers },
+    { ...init, headers, credentials: "same-origin" },
   );
   const text = res.status === 204 ? "" : await res.text();
   let body: unknown = null;

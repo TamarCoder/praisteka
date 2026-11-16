@@ -25,7 +25,6 @@ export interface LoginRequest {
 }
 
 export interface LoginResponse {
-  token: string;
   /** ISO */
   expiresAt: string;
   user: Me;

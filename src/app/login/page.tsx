@@ -51,8 +51,8 @@ export default function LoginPage() {
             onSubmit={async (values) => {
               const email = values.email.trim();
               try {
-                const { token } = await authApi.login({ email, password: values.password });
-                useSessionStore.getState().signIn(token);
+                await authApi.login({ email, password: values.password });
+                useSessionStore.getState().signIn();
                 router.push("/dashboard");
               } catch (error) {
                 reportError(ErrorAction.Login, error, email);
