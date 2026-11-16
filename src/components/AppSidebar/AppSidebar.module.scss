@@ -41,7 +41,8 @@
   }
 }
 
-.burger {
+// .head-ით — Button-ის display: inline-flex რომ არ გადაფაროს (CSS-ის ჩატვირთვის რიგი)
+.head .burger {
   display: none;
   width: $h-touch;
   height: $h-touch;

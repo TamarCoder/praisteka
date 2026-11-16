@@ -23,7 +23,9 @@ const toPx = (c?: ColInfo) => {
 };
 
 const toCell = (v: unknown): CellValue => (typeof v === "number" ? v : String(v ?? ""));
-const isFilled = (v: CellValue | undefined) => v !== undefined && String(v).trim() !== "";
+// უხილავი სიმბოლოები (zero-width, BOM, soft hyphen) და ყველა სახის სივრცე — ცარიელად ითვლება
+const INVISIBLE = /[\s\p{Z}\p{Cf}\p{Cc}]/gu;
+const isFilled = (v: CellValue | undefined) => v !== undefined && String(v).replace(INVISIBLE, "") !== "";
 
 /** მხოლოდ შევსებული სტრიქონები და სვეტები; სიგანეები მიჰყვება დარჩენილ სვეტებს. ძველ ატვირთვებზეც (ჩატვირთვისას) */
 export function trimSheet(sheet: SheetData): SheetData {

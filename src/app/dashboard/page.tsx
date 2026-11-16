@@ -77,7 +77,9 @@ export default function DashboardPage() {
   const [seedQuery, setSeedQuery] = useState("");
   const [picked, setPicked] = useState<string[]>([]);
   const [compareOpen, setCompareOpen] = useState(false);
-  const searchAll = scope === "all";
+  // მთავარ ეკრანზე (ფაილი არ არის გახსნილი) ძებნა ყოველთვის ყველა ფაილშია
+  const home = !version;
+  const searchAll = scope === "all" || home;
 
   // სხვა ფაილი ზოლიდან — ძებნა თავიდან; ძებნის შედეგიდან გახსნისას (opening) — არა
   const [opening, setOpening] = useState<string | null>(null);
@@ -155,8 +157,8 @@ export default function DashboardPage() {
     }
     try {
       // ატვირთვა = ფაილი + ვერსია 1
-      const created = await uploadFile({ companyName: name.trim(), fileName: file.name, effectiveFrom, folderId: folder || undefined, sheets }, t.uploadNote);
-      selectVersion(created.id);
+      await uploadFile({ companyName: name.trim(), fileName: file.name, effectiveFrom, folderId: folder || undefined, sheets }, t.uploadNote);
+      // ატვირთვის შემდეგ ფაილი ავტომატურად არ იხსნება — მომხმარებელი იქვე რჩება
       setToast(fill(t.uploaded, { company: name.trim(), date: formatDate(effectiveFrom) }));
     } catch (error) {
       reportError(ErrorAction.Upload, error);
@@ -208,6 +210,7 @@ export default function DashboardPage() {
               <Checkbox
                 label={t.scope.all}
                 checked={searchAll}
+                disabled={home}
                 onChange={(e) => {
                   if (e.target.checked) setGlobalQuery(view.query);
                   setScope(e.target.checked ? "all" : "file");
@@ -255,7 +258,7 @@ export default function DashboardPage() {
             </>
           }
         />
-        {searchAll ? (
+        {searchAll && !(home && globalQuery.trim().length < MIN_QUERY) ? (
           globalQuery.trim().length < MIN_QUERY ? (
             <EmptyState icon={StateIcon.pick} title={t.globalSearch.hint.title} text={t.globalSearch.hint.text} className={styles.state} />
           ) : all.loading ? (
