@@ -21,5 +21,8 @@ export interface DateRangePickerProps {
   /** ეკრანის წამკითხველისთვის */
   label: string;
   labels: DateRangeLabels;
+  /** ერთი თარიღი (to ყოველთვის "") — პირველივე დაჭერა ირჩევს და ხურავს */
+  single?: boolean;
+  invalid?: boolean;
   className?: string;
 }

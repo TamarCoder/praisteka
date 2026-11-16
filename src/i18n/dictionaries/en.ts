@@ -131,6 +131,7 @@ export const en: Dictionary = {
       company: "Company",
       companyPlaceholder: "Pick one or type a new name",
       date: "In effect from",
+      datePlaceholder: "Pick a date",
       folder: "Folder",
       noFolder: "No folder",
       file: "Choose a file or drop it here",

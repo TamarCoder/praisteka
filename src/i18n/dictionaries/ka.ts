@@ -130,6 +130,7 @@ export const ka = {
       company: "კომპანია",
       companyPlaceholder: "აირჩიე ან ჩაწერე ახალი",
       date: "ძალაშია თარიღიდან",
+      datePlaceholder: "აირჩიე თარიღი",
       folder: "ფოლდერი",
       noFolder: "ფოლდერის გარეშე",
       file: "აირჩიე ფაილი ან ჩააგდე აქ",

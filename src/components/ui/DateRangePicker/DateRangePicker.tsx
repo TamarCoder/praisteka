@@ -17,7 +17,7 @@ function monthDays(y: number, m: number) {
 }
 
 // ერთი ველი: პირველი დაჭერა — დასაწყისი, მეორე — დასასრული
-export function DateRangePicker({ value, onChange, label, labels, className }: DateRangePickerProps) {
+export function DateRangePicker({ value, onChange, label, labels, single = false, invalid = false, className }: DateRangePickerProps) {
   const ref = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
   const [hover, setHover] = useState("");
@@ -38,12 +38,16 @@ export function DateRangePicker({ value, onChange, label, labels, className }: D
   };
 
   // დასაწყისი არჩეულია, დასასრული — ჯერ არა
-  const picking = !!value.from && !value.to;
+  const picking = !single && !!value.from && !value.to;
   const end = value.to || (picking ? hover : "");
   const [lo, hi] = value.from && end && end < value.from ? [end, value.from] : [value.from, end];
 
   const pick = (day: string) => {
-    if (!picking) return onChange({ from: day, to: "" });
+    if (single || !picking) {
+      onChange({ from: day, to: "" });
+      if (single) setOpen(false);
+      return;
+    }
     const [from, to] = day < value.from ? [day, value.from] : [value.from, day];
     onChange({ from, to });
     setOpen(false);
@@ -53,14 +57,16 @@ export function DateRangePicker({ value, onChange, label, labels, className }: D
     setMonth(({ y, m }) => ({ y: y + Math.floor((m + step) / 12), m: (m + step + 12) % 12 }));
 
   const text = value.from
-    ? `${formatDate(value.from)} – ${value.to ? formatDate(value.to) : "…"}`
+    ? single
+      ? formatDate(value.from)
+      : `${formatDate(value.from)} – ${value.to ? formatDate(value.to) : "…"}`
     : labels.placeholder;
 
   return (
     <div ref={ref} className={[styles.picker, className].filter(Boolean).join(" ")}>
       <button
         type="button"
-        className={[styles.trigger, open && styles.open, !value.from && styles.empty].filter(Boolean).join(" ")}
+        className={[styles.trigger, open && styles.open, !value.from && styles.empty, invalid && styles.invalid].filter(Boolean).join(" ")}
         aria-label={label}
         aria-expanded={open}
         onClick={toggle}

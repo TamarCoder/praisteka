@@ -145,3 +145,6 @@
 
   &:focus-visible { @include focus-ring; }
 }
+
+// ფორმაში შეცდომა
+.invalid { border-color: c(err); }

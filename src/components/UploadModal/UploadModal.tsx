@@ -6,6 +6,7 @@ import { Controller, useForm } from "react-hook-form";
 import { Banner } from "@/components/ui/Banner/Banner";
 import { Button } from "@/components/ui/Button/Button";
 import { ButtonVariant } from "@/components/ui/Button/Button.types";
+import { DateRangePicker } from "@/components/ui/DateRangePicker/DateRangePicker";
 import { Dropzone } from "@/components/ui/Dropzone/Dropzone";
 import { Field } from "@/components/ui/Field/Field";
 import { Input } from "@/components/ui/Input/Input";
@@ -17,7 +18,7 @@ import styles from "./UploadModal.module.scss";
 import type { UploadModalProps } from "./UploadModal.types";
 
 // 1 App:28-46
-export function UploadModal({ open, onClose, t, companyNames, defaultCompany = "", folders, defaultFolder = "", onSubmit }: UploadModalProps) {
+export function UploadModal({ open, onClose, t, calendar, companyNames, defaultCompany = "", folders, defaultFolder = "", onSubmit }: UploadModalProps) {
   const formId = useId();
   const listId = useId();
   const [formError, setFormError] = useState<string>();
@@ -76,7 +77,23 @@ export function UploadModal({ open, onClose, t, companyNames, defaultCompany = "
           ))}
         </datalist>
         <Field label={t.uploadModal.date} error={errors.effectiveFrom?.message}>
-          <Input type="date" invalid={!!errors.effectiveFrom} {...register("effectiveFrom", clearError)} />
+          <Controller
+            control={control}
+            name="effectiveFrom"
+            render={({ field }) => (
+              <DateRangePicker
+                single
+                label={t.uploadModal.date}
+                labels={calendar}
+                invalid={!!errors.effectiveFrom}
+                value={{ from: field.value, to: "" }}
+                onChange={(r) => {
+                  field.onChange(r.from);
+                  setFormError(undefined);
+                }}
+              />
+            )}
+          />
         </Field>
         <Field label={t.uploadModal.folder}>
           <Select options={folders} {...register("folder")} />
