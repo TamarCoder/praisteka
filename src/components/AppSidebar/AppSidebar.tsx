@@ -101,6 +101,25 @@ export function AppSidebar() {
           emptyText={t.noFiles}
           emptyHint={t.noFilesHint}
         />
+        {collapsed && (
+          // დაკეცილი ზოლი — ფაილები პატარა ნიშნებად (სახელის 2 ასო), სრული სახელი მინიშნებაში
+          <ul className={styles.mini} aria-label={t.filesTitle}>
+            {[...tree.folders.flatMap((f) => f.files), ...tree.files].map((f) => (
+              <li key={f.id}>
+                <button
+                  type="button"
+                  className={[styles.miniFile, f.id === activeId && styles.miniActive].filter(Boolean).join(" ")}
+                  title={f.name}
+                  aria-label={f.name}
+                  aria-current={f.id === activeId ? "page" : undefined}
+                  onClick={() => router.push(`/dashboard?file=${f.id}`)}
+                >
+                  {f.name.slice(0, 2)}
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
         <div className={styles.bottom}>
           <div className={styles.prefs}>
             <LanguageSwitcher value={locale} onChange={setLocale} label={prefs.language} />
