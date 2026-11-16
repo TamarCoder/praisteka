@@ -11,6 +11,10 @@
   min-height: 0;
   padding-right: sp(4);
   overflow-y: auto;
+  // scroll მუშაობს, ზოლი არ ჩანს
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar { display: none; }
 }
 
 .list,

@@ -37,7 +37,8 @@ export function FileTree({ label, folders, files, activeId, onSelect, onDelete, 
   return (
     <nav className={styles.tree} aria-label={label}>
       {folders.map((folder) => (
-        <details key={folder.id} className={styles.folder} open>
+        // დაკეცილია; იშლება მხოლოდ ის, რომელშიც გახსნილი ფაილია — დანარჩენს მომხმარებელი თვითონ შლის
+        <details key={folder.id} className={styles.folder} open={folder.files.some((f) => f.id === activeId) || undefined}>
           <summary className={styles.summary}>
             <span className={styles.name}>{folder.name}</span>
             <span className={styles.count}>{folder.files.length}</span>

@@ -5,7 +5,8 @@ export const ka = {
     about: "ჩვენს შესახებ",
     pricing: "ფასები",
     contacts: "კონტაქტები",
-    login: "რეგისტრაცია / ავტორიზაცია",
+    login: "ავტორიზაცია",
+    register: "რეგისტრაცია",
     menu: "მენიუ",
   },
   prefs: {

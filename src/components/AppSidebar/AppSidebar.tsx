@@ -105,6 +105,8 @@ export function AppSidebar() {
         <Link href="/dashboard" className={styles.home} aria-label={t.filesTitle} onClick={() => setMenuOpen(false)}>
           <Logo size={LogoSize.Md} withText={!collapsed} className={styles.logo} />
         </Link>
+        {/* ტაბლეტი/მობილური: გვერდის ღილაკები და ავატარი აქ ჩნდება (FileHeader → portal) */}
+        <div id="app-bar-actions" className={styles.barActions} />
         <Button
           variant={ButtonVariant.Ghost}
           size={ButtonSize.Sm}

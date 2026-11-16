@@ -6,10 +6,11 @@ import type { Company, FileSummary, Folder } from "@/types/api";
 
 /**
  * ზოლის ხე: ხელით შექმნილი ფოლდერები, შემდეგ დანარჩენი ფაილები კომპანიით დაჯგუფებული —
- * ერთი პრაისის ყველა ვერსია ერთად, ახლიდან ძველისკენ
+ * ერთი პრაისის ყველა ვერსია ერთად, ატვირთვის რიგით
  */
 export function useFileTree(files: FileSummary[], folders: Folder[], companies: Company[]): { folders: TreeFolder[]; files: TreeFile[] } {
-  const sorted = [...files].sort((a, b) => b.effectiveFrom.localeCompare(a.effectiveFrom));
+  // ატვირთვის რიგით: პირველი ზემოთ, ახალი ქვემოთ (API უკვე ასე აბრუნებს — createdAt ASC)
+  const sorted = files;
   const companyName = (id: string) => companies.find((c) => c.id === id)?.name ?? "";
   const toFile = (f: FileSummary, withCompany = true): TreeFile => ({
     id: f.id,

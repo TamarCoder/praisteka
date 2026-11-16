@@ -48,6 +48,12 @@ export const StateIcon = {
     </>,
   ),
   /** X — მონიშვნის გასუფთავება */
+  search: icon(
+    <>
+      <circle cx="11" cy="11" r="7" />
+      <path d="M20 20l-3.5-3.5" />
+    </>,
+  ),
   clear: icon(<path d="M6 6l12 12M18 6L6 18" />),
   /** ძაბრი — ფილტრი */
   filter: icon(<path d="M3 5h18l-7 8v6l-4 2v-8z" />),

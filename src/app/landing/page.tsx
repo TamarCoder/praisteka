@@ -76,6 +76,8 @@ export default function LandingPage() {
         activeId="home"
         loginHref="/login"
         loginLabel={t.nav.login}
+        registerHref="/register"
+        registerLabel={t.nav.register}
         menuLabel={t.nav.menu}
         preferences={
           <div className={styles.prefs}>

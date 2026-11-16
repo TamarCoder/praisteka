@@ -61,8 +61,8 @@ export default function DashboardPage() {
   const [saveOpen, setSaveOpen] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
 
-  // ახლიდან ძველისკენ
-  const sorted = [...(versions ?? [])].sort((a, b) => b.effectiveFrom.localeCompare(a.effectiveFrom));
+  // ატვირთვის რიგით (API: createdAt ASC) — პირველი ზემოთ
+  const sorted = versions ?? [];
   // ?file= არ არის — მთავარი: ფაილები ბოქსებად, არცერთი არ არის გახსნილი
   const version = sorted.find((v) => v.id === fileParam);
   const company = companies?.find((c) => c.id === version?.companyId);

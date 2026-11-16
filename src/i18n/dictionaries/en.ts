@@ -6,7 +6,8 @@ export const en: Dictionary = {
     about: "About",
     pricing: "Pricing",
     contacts: "Contact",
-    login: "Sign up / Log in",
+    login: "Log in",
+    register: "Sign up",
     menu: "Menu",
   },
   prefs: {

@@ -42,6 +42,17 @@
 }
 
 // .head-ით — Button-ის display: inline-flex რომ არ გადაფაროს (CSS-ის ჩატვირთვის რიგი)
+.barActions {
+  display: none;
+
+  @include down(desktop) {
+    display: flex;
+    align-items: center;
+    gap: sp(1);
+    margin-left: auto;
+  }
+}
+
 .head .burger {
   display: none;
   width: $h-touch;
@@ -166,6 +177,9 @@
   padding: 0;
   list-style: none;
   overflow-y: auto;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar { display: none; }
 
   @include down(desktop) { display: none; }
 }

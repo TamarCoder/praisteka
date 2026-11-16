@@ -23,6 +23,8 @@ export interface LandingTopBarProps {
   activeId: string;
   loginHref: string;
   loginLabel: string;
+  registerHref: string;
+  registerLabel: string;
   /** ☰ ღილაკის წარწერა ეკრანის წამკითხველისთვის */
   menuLabel: string;
   /** ენა/თემა: დესკტოპზე „შესვლის“ შემდეგ, მობილურზე მენიუში */

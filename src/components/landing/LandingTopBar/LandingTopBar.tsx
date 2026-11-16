@@ -14,6 +14,8 @@ export function LandingTopBar({
   activeId,
   loginHref,
   loginLabel,
+  registerHref,
+  registerLabel,
   menuLabel,
   preferences,
   className,
@@ -52,8 +54,12 @@ export function LandingTopBar({
       </nav>
 
       <div className={styles.actions}>
-        <Button href={loginHref} variant={ButtonVariant.Ghost} size={ButtonSize.Sm}>
+        {/* ორი ცალკე ღილაკი: ავტორიზაცია — ჩარჩოიანი, რეგისტრაცია — მთავარი (ფერადი) */}
+        <Button href={loginHref} variant={ButtonVariant.Secondary} size={ButtonSize.Sm}>
           {loginLabel}
+        </Button>
+        <Button href={registerHref} variant={ButtonVariant.Primary} size={ButtonSize.Sm}>
+          {registerLabel}
         </Button>
         {preferences && <div className={styles.barPrefs}>{preferences}</div>}
         <Button
