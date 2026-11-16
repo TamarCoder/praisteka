@@ -12,7 +12,7 @@ import { Field } from "@/components/ui/Field/Field";
 import { Input } from "@/components/ui/Input/Input";
 import { Modal } from "@/components/ui/Modal/Modal";
 import { ModalSize } from "@/components/ui/Modal/Modal.types";
-import { Select } from "@/components/ui/Select/Select";
+import { Dropdown } from "@/components/ui/Dropdown/Dropdown";
 import { createUploadSchema, EXCEL_ACCEPT, type UploadValues } from "@/schemas/upload.schema";
 import styles from "./UploadModal.module.scss";
 import type { UploadModalProps } from "./UploadModal.types";
@@ -47,7 +47,7 @@ export function UploadModal({ open, onClose, t, calendar, companyNames, defaultC
       open={open}
       onClose={close}
       title={t.uploadModal.title}
-      size={ModalSize.Md}
+      size={ModalSize.Lg}
       closeLabel={t.uploadModal.close}
       footer={
         <>
@@ -62,6 +62,8 @@ export function UploadModal({ open, onClose, t, calendar, companyNames, defaultC
     >
       <form id={formId} className={styles.form} onSubmit={submit} noValidate>
         {formError && <Banner>{formError}</Banner>}
+        {/* კომპანია და ფოლდერი — ერთ რიგში; ფოლდერის სია ფორმის ზედა ნაწილში იშლება და ფანჯარაში ეტევა */}
+        <div className={styles.row}>
         <Field label={t.uploadModal.company} error={errors.company?.message}>
           <Input
             list={listId}
@@ -71,6 +73,14 @@ export function UploadModal({ open, onClose, t, calendar, companyNames, defaultC
             {...register("company", clearError)}
           />
         </Field>
+        <Field label={t.uploadModal.folder}>
+          <Controller
+            control={control}
+            name="folder"
+            render={({ field }) => <Dropdown label={t.uploadModal.folder} options={folders} value={field.value} onChange={field.onChange} />}
+          />
+        </Field>
+        </div>
         <datalist id={listId}>
           {companyNames.map((name) => (
             <option key={name} value={name} />
@@ -94,9 +104,6 @@ export function UploadModal({ open, onClose, t, calendar, companyNames, defaultC
               />
             )}
           />
-        </Field>
-        <Field label={t.uploadModal.folder}>
-          <Select options={folders} {...register("folder")} />
         </Field>
         <Controller
           control={control}

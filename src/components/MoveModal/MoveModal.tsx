@@ -6,7 +6,7 @@ import { ButtonVariant } from "@/components/ui/Button/Button.types";
 import { Field } from "@/components/ui/Field/Field";
 import { Modal } from "@/components/ui/Modal/Modal";
 import { ModalSize } from "@/components/ui/Modal/Modal.types";
-import { Select } from "@/components/ui/Select/Select";
+import { Dropdown } from "@/components/ui/Dropdown/Dropdown";
 import type { MoveModalProps } from "./MoveModal.types";
 
 // ფაილის გადატანა ფოლდერში (ან ფოლდერიდან გამოტანა)
@@ -50,7 +50,7 @@ export function MoveModal({ name, current, folders, onClose, onConfirm, t }: Mov
     >
       <p>{name}</p>
       <Field label={t.uploadModal.folder}>
-        <Select options={folders} value={value} onChange={(e) => setPicked(e.target.value)} />
+        <Dropdown label={t.uploadModal.folder} options={folders} value={value} onChange={setPicked} />
       </Field>
     </Modal>
   );

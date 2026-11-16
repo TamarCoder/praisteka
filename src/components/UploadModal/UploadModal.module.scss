@@ -1,6 +1,7 @@
 @use 'tokens/colors' as *;
 @use 'tokens/typography' as *;
 @use 'tokens/spacing' as *;
+@use 'tokens/breakpoints' as *;
 
 .form {
   display: flex;
@@ -18,4 +19,13 @@
 .error {
   color: c(err);
   @include text(small-strong);
+}
+
+// ორი ველი გვერდიგვერდ; მობილურზე — ერთმანეთის ქვეშ
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: sp(4);
+
+  @include down(tablet) { grid-template-columns: 1fr; }
 }
