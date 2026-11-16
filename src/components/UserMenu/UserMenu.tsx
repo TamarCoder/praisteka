@@ -4,12 +4,12 @@ import { useRouter } from "next/navigation";
 import { useCallback, useRef, useState } from "react";
 import { useDismiss } from "@/hooks/useDismiss";
 import { dictionaries } from "@/i18n/dictionaries";
-import { useUserStore } from "@/stores/user.store";
+import { useAccountMutations } from "@/hooks/api/useAccountMutations";
+import { useMe } from "@/hooks/api/useMe";
 import { usePreferencesStore } from "@/stores/preferences.store";
 import styles from "./UserMenu.module.scss";
 
-
-// ჰედერში ავატარი → პროფილი, პარამეტრები, გასვლა (ბექენდამდე — დემო მომხმარებელი)
+// ჰედერში ავატარი → პროფილი, პარამეტრები, გასვლა
 export function UserMenu() {
   const router = useRouter();
   const ref = useRef<HTMLDivElement>(null);
@@ -18,11 +18,12 @@ export function UserMenu() {
   useDismiss(ref, open, close);
   const locale = usePreferencesStore((s) => s.locale);
   const { user: t } = dictionaries[locale];
-  const { user, signOut } = useUserStore();
+  const { data: user } = useMe();
+  const { logout: endSession } = useAccountMutations();
   const initial = (user?.name[0] ?? "").toUpperCase();
 
-  const logout = () => {
-    signOut();
+  const logout = async () => {
+    await endSession();
     router.push("/login");
   };
 

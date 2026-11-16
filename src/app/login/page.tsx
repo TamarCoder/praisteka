@@ -9,9 +9,12 @@ import { LanguageSwitcher } from "@/components/ui/LanguageSwitcher/LanguageSwitc
 import { ThemeSwitcher } from "@/components/ui/ThemeSwitcher/ThemeSwitcher";
 import { useSystemTheme } from "@/hooks/useSystemTheme";
 import { dictionaries } from "@/i18n/dictionaries";
-import { DEMO_NAME, demoLogin } from "@/lib/demoAuth";
+import { authApi } from "@/api/auth";
+import { reportError } from "@/api/errors";
+import { ApiError } from "@/api/fetcher";
 import { usePreferencesStore } from "@/stores/preferences.store";
-import { useUserStore } from "@/stores/user.store";
+import { useSessionStore } from "@/stores/session.store";
+import { ErrorAction } from "@/types/api";
 import styles from "./page.module.scss";
 
 export default function LoginPage() {
@@ -38,20 +41,24 @@ export default function LoginPage() {
         onModeChange={changeMode}
         modeLabels={t.auth.modes}
         busy={busy}
-        hint={t.auth.demoHint}
       >
         <LoginForm
           t={t.auth}
           onBusyChange={setBusy}
           forgotHref="/forgot-password"
           onSubmit={async (values) => {
-            // დემო: შესვლა demo@clinic.ge-ით ან იმ ელფოსტით, რომლითაც ამ ბრაუზერში დარეგისტრირდი
-            await useUserStore.persist.rehydrate();
-            const registered = useUserStore.getState().user?.email === values.email.trim();
-            if (!(await demoLogin(values)) && !registered) return t.auth.errors.credentials;
             const email = values.email.trim();
-            useUserStore.getState().signIn(email, registered ? undefined : DEMO_NAME);
-            router.push("/dashboard");
+            try {
+              const { token } = await authApi.login({ email, password: values.password });
+              useSessionStore.getState().signIn(token);
+              router.push("/dashboard");
+            } catch (error) {
+              reportError(ErrorAction.Login, error, email);
+              if (!(error instanceof ApiError)) return t.auth.errors.network;
+              if (error.status === 403) return t.auth.errors.blocked;
+              if (error.status === 429) return t.auth.errors.tooMany;
+              return t.auth.errors.credentials;
+            }
           }}
         />
       </AuthCard>
