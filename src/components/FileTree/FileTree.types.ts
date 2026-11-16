@@ -9,6 +9,8 @@ export interface TreeFolder {
   id: string;
   name: string;
   files: TreeFile[];
+  /** ხელით შექმნილი ფოლდერი (კომპანიის ავტომატური ჯგუფი — არა): წაშლა შეიძლება */
+  editable?: boolean;
 }
 
 export interface FileTreeProps {
@@ -25,6 +27,9 @@ export interface FileTreeProps {
   moveLabel?: string;
   /** წაშლის ღილაკის წარწერა ეკრანის წამკითხველისთვის */
   deleteLabel?: string;
+  /** ფოლდერის წაშლა (მხოლოდ editable ფოლდერებზე) */
+  onDeleteFolder?: (id: string) => void;
+  deleteFolderLabel?: string;
   emptyText: string;
   /** ერთი ხაზი სათაურის ქვეშ */
   emptyHint: string;

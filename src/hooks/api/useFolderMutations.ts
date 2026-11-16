@@ -13,5 +13,11 @@ export function useFolderMutations() {
     return folder;
   };
 
-  return { createFolder, isMutating };
+  // ფოლდერის ფაილები არ იშლება — ბაზა მათ ფოლდერის გარეშე ტოვებს (ON DELETE SET NULL)
+  const deleteFolder = async (folderId: string) => {
+    await foldersApi.delete(folderId);
+    await mutate((key) => key === API_ENDPOINTS.folders || key === API_ENDPOINTS.files);
+  };
+
+  return { createFolder, deleteFolder, isMutating };
 }

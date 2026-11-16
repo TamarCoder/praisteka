@@ -15,6 +15,7 @@ import { Toast } from "@/components/ui/Toast/Toast";
 import { useFileTree } from "@/hooks/useFileTree";
 import { useCompanies } from "@/hooks/api/useCompanies";
 import { useFileMutations } from "@/hooks/api/useFileMutations";
+import { useFolderMutations } from "@/hooks/api/useFolderMutations";
 import { useFiles } from "@/hooks/api/useFiles";
 import { useFolders } from "@/hooks/api/useFolders";
 import { useSystemTheme } from "@/hooks/useSystemTheme";
@@ -33,12 +34,14 @@ export function AppSidebar() {
   const { data: folders } = useFolders();
   const { data: companies } = useCompanies();
   const { deleteFile, moveFile } = useFileMutations();
+  const { deleteFolder } = useFolderMutations();
   const tree = useFileTree(files ?? [], folders ?? [], companies ?? []);
   const { locale, theme, setLocale, setTheme, sidebarCollapsed: collapsed, toggleSidebar } = usePreferencesStore();
   const systemTheme = useSystemTheme();
   const { prefs, nav, dashboard: t } = dictionaries[locale];
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [moveId, setMoveId] = useState<string | null>(null);
+  const [folderDeleteId, setFolderDeleteId] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(null);
   // ტაბლეტი/მობილური: ☰ მენიუ, როგორც ლენდინგზე (LandingTopBar)
   const [menuOpen, setMenuOpen] = useState(false);
@@ -57,6 +60,19 @@ export function AppSidebar() {
   const label = collapsed ? prefs.expand : prefs.collapse;
   const toDelete = files.find((f) => f.id === deleteId);
   const toMove = files.find((f) => f.id === moveId);
+  const folderToDelete = folders.find((f) => f.id === folderDeleteId);
+
+  const removeFolder = async () => {
+    if (!folderToDelete) return;
+    try {
+      await deleteFolder(folderToDelete.id);
+    } catch {
+      setToast(t.errors.save);
+      return;
+    }
+    setFolderDeleteId(null);
+    setToast(fill(t.folderDeleted, { name: folderToDelete.name }));
+  };
 
   const move = async (folderId: string) => {
     if (!toMove) return;
@@ -114,6 +130,8 @@ export function AppSidebar() {
           onDelete={setDeleteId}
           onMove={folders.length ? setMoveId : undefined}
           moveLabel={t.moveFile}
+          onDeleteFolder={setFolderDeleteId}
+          deleteFolderLabel={t.deleteFolder}
           deleteLabel={t.deleteFile}
           emptyText={t.noFiles}
           emptyHint={t.noFilesHint}
@@ -158,6 +176,13 @@ export function AppSidebar() {
         onClose={() => setMoveId(null)}
         onConfirm={move}
         t={t}
+      />
+      <DeleteModal
+        name={folderToDelete?.name ?? null}
+        onClose={() => setFolderDeleteId(null)}
+        onConfirm={removeFolder}
+        t={t}
+        texts={t.deleteFolderModal}
       />
       <DeleteModal name={toDelete?.fileName ?? null} onClose={() => setDeleteId(null)} onConfirm={removeFile} t={t} />
       <Toast message={toast} onClose={() => setToast(null)} className={styles.toast} />

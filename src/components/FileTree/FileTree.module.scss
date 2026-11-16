@@ -136,3 +136,26 @@
 
   &:hover { color: c(acc); }
 }
+
+// ფოლდერის წაშლა — სახელის ბოლოს, მაუსის მიტანისას
+.folderDelete {
+  @include transition(opacity);
+  padding: 0 sp(1);
+  border: none;
+  border-radius: $radius-xs;
+  background: transparent;
+  color: c(mute);
+  opacity: 0;
+  cursor: pointer;
+  @include text(small);
+
+  &:hover { color: c(err); }
+  &:focus-visible { opacity: 1; @include focus-ring; }
+}
+
+.summary:hover .folderDelete,
+.summary:focus-within .folderDelete { opacity: 1; }
+
+@media (hover: none) {
+  .folderDelete { opacity: 1; }
+}

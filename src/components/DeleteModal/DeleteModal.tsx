@@ -9,7 +9,7 @@ import { fill } from "@/i18n/fill";
 import type { DeleteModalProps } from "./DeleteModal.types";
 
 // სამუდამო წაშლის დადასტურება
-export function DeleteModal({ name, onClose, onConfirm, t }: DeleteModalProps) {
+export function DeleteModal({ name, onClose, onConfirm, t, texts = t.deleteModal }: DeleteModalProps) {
   const [busy, setBusy] = useState(false);
 
   const confirm = async () => {
@@ -25,7 +25,7 @@ export function DeleteModal({ name, onClose, onConfirm, t }: DeleteModalProps) {
     <Modal
       open={name !== null}
       onClose={onClose}
-      title={t.deleteModal.title}
+      title={texts.title}
       size={ModalSize.Md}
       closeLabel={t.uploadModal.close}
       footer={
@@ -34,12 +34,12 @@ export function DeleteModal({ name, onClose, onConfirm, t }: DeleteModalProps) {
             {t.uploadModal.cancel}
           </Button>
           <Button onClick={confirm} loading={busy}>
-            {t.deleteModal.submit}
+            {texts.submit}
           </Button>
         </>
       }
     >
-      <p>{fill(t.deleteModal.text, { name: name ?? "" })}</p>
+      <p>{fill(texts.text, { name: name ?? "" })}</p>
     </Modal>
   );
 }

@@ -4,7 +4,7 @@ import styles from "./FileTree.module.scss";
 import type { FileTreeProps, TreeFile } from "./FileTree.types";
 
 // ფოლდერები (გაშლადი) და ფოლდერის გარეშე ფაილები
-export function FileTree({ label, folders, files, activeId, onSelect, onDelete, deleteLabel, onMove, moveLabel, emptyText, emptyHint }: FileTreeProps) {
+export function FileTree({ label, folders, files, activeId, onSelect, onDelete, deleteLabel, onMove, moveLabel, onDeleteFolder, deleteFolderLabel, emptyText, emptyHint }: FileTreeProps) {
   const item = (f: TreeFile) => {
     const active = f.id === activeId;
     return (
@@ -41,6 +41,21 @@ export function FileTree({ label, folders, files, activeId, onSelect, onDelete, 
           <summary className={styles.summary}>
             <span className={styles.name}>{folder.name}</span>
             <span className={styles.count}>{folder.files.length}</span>
+            {folder.editable && onDeleteFolder && (
+              <button
+                type="button"
+                className={styles.folderDelete}
+                aria-label={`${deleteFolderLabel}: ${folder.name}`}
+                title={deleteFolderLabel}
+                onClick={(e) => {
+                  // summary-ზე დაჭერა ფოლდერს კეცავს — აქ არა
+                  e.preventDefault();
+                  onDeleteFolder(folder.id);
+                }}
+              >
+                🗑
+              </button>
+            )}
           </summary>
           <ul className={styles.nested}>{folder.files.map(item)}</ul>
         </details>

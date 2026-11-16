@@ -6,4 +6,6 @@ export interface DeleteModalProps {
   onClose: () => void;
   onConfirm: () => Promise<void>;
   t: Dictionary["dashboard"];
+  /** სხვა ტექსტები (მაგ. ფოლდერისთვის); არ არის — ფაილის ტექსტები */
+  texts?: { title: string; text: string; submit: string };
 }

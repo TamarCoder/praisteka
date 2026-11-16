@@ -21,7 +21,7 @@ export function useFileTree(files: FileSummary[], folders: Folder[], companies: 
   const companyIds = [...new Set(loose.map((v) => v.companyId))];
   return {
     folders: [
-      ...folders.map((f) => ({ id: f.id, name: f.name, files: sorted.filter((v) => v.folderId === f.id).map((v) => toFile(v)) })),
+      ...folders.map((f) => ({ id: f.id, name: f.name, editable: true, files: sorted.filter((v) => v.folderId === f.id).map((v) => toFile(v)) })),
       ...companyIds.map((id) => ({ id: `company:${id}`, name: companyName(id), files: loose.filter((v) => v.companyId === id).map((v) => toFile(v, false)) })),
     ],
     files: [],
