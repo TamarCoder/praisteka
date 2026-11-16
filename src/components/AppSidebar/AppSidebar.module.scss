@@ -221,6 +221,9 @@
   @include up(desktop) {
     width: $w-sidebar-collapsed;
     padding-left: ($w-sidebar-collapsed - 34px) * 0.5;
+
+    // დაკეცილზე მხოლოდ ნიშანი — „პრაისთეკა“ ტექსტი ჩატვირთვისას არ უნდა გამოჩნდეს
+    .logo > span + span { display: none; }
   }
 }
 

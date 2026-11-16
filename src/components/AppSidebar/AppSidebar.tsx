@@ -36,7 +36,14 @@ export function AppSidebar() {
   const { deleteFile, moveFile } = useFileMutations();
   const { deleteFolder } = useFolderMutations();
   const tree = useFileTree(files ?? [], folders ?? [], companies ?? []);
-  const { locale, theme, setLocale, setTheme, sidebarCollapsed: collapsed, toggleSidebar } = usePreferencesStore();
+  const {
+    locale,
+    theme,
+    setLocale,
+    setTheme,
+    sidebarCollapsed: collapsed,
+    toggleSidebar,
+  } = usePreferencesStore();
   const systemTheme = useSystemTheme();
   const { prefs, nav, dashboard: t } = dictionaries[locale];
   const [deleteId, setDeleteId] = useState<string | null>(null);
@@ -56,7 +63,8 @@ export function AppSidebar() {
 
   const fileParam = params.get("file");
   // ფაილი მონიშნულია მხოლოდ მაშინ, როცა გახსნილია (?file=)
-  const activeId = pathname === "/dashboard" ? (fileParam ?? undefined) : undefined;
+  const activeId =
+    pathname === "/dashboard" ? (fileParam ?? undefined) : undefined;
   const label = collapsed ? prefs.expand : prefs.collapse;
   const toDelete = files.find((f) => f.id === deleteId);
   const toMove = files.find((f) => f.id === moveId);
@@ -100,10 +108,29 @@ export function AppSidebar() {
   };
 
   return (
-    <aside className={[styles.sidebar, collapsed && styles.collapsed].filter(Boolean).join(" ")}>
+    <aside
+      className={[styles.sidebar, collapsed && styles.collapsed]
+        .filter(Boolean)
+        .join(" ")}
+    >
       <div className={styles.head}>
-        <Link href="/dashboard" className={styles.home} aria-label={t.filesTitle} onClick={() => setMenuOpen(false)}>
-          <Logo size={LogoSize.Md} withText={!collapsed} className={styles.logo} />
+        <Link
+          href="/dashboard"
+          className={styles.home}
+          aria-label={t.filesTitle}
+          onClick={(e) => {
+            // ლოგო = სუფთა მთავარი: გვერდი თავიდან იტვირთება, ძებნა და გახსნილი ფაილი ქრება
+            e.preventDefault();
+            // სრული გადატვირთვა განზრახაა: router.push ძებნის მდგომარეობას არ ასუფთავებს
+            // eslint-disable-next-line @next/next/no-location-assign-relative-destination
+            window.location.href = `${window.location.origin}/dashboard`;
+          }}
+        >
+          <Logo
+            size={LogoSize.Md}
+            withText={!collapsed}
+            className={styles.logo}
+          />
         </Link>
         {/* ტაბლეტი/მობილური: გვერდის ღილაკები და ავატარი აქ ჩნდება (FileHeader → portal) */}
         <div id="app-bar-actions" className={styles.barActions} />
@@ -119,7 +146,12 @@ export function AppSidebar() {
           {menuOpen ? "✕" : "☰"}
         </Button>
       </div>
-      <div id="app-menu" className={[styles.menu, menuOpen && styles.menuOpen].filter(Boolean).join(" ")}>
+      <div
+        id="app-menu"
+        className={[styles.menu, menuOpen && styles.menuOpen]
+          .filter(Boolean)
+          .join(" ")}
+      >
         <FileTree
           label={t.filesTitle}
           folders={tree.folders}
@@ -141,29 +173,63 @@ export function AppSidebar() {
         {collapsed && (
           // დაკეცილი ზოლი — ფაილები პატარა ნიშნებად (სახელის 2 ასო), სრული სახელი მინიშნებაში
           <ul className={styles.mini} aria-label={t.filesTitle}>
-            {[...tree.folders.flatMap((f) => f.files), ...tree.files].map((f) => (
-              <li key={f.id}>
-                <button
-                  type="button"
-                  className={[styles.miniFile, f.id === activeId && styles.miniActive].filter(Boolean).join(" ")}
-                  title={f.name}
-                  aria-label={f.name}
-                  aria-current={f.id === activeId ? "page" : undefined}
-                  onClick={() => router.push(`/dashboard?file=${f.id}`)}
-                >
-                  {f.name.slice(0, 2)}
-                </button>
-              </li>
-            ))}
+            {[...tree.folders.flatMap((f) => f.files), ...tree.files].map(
+              (f) => (
+                <li key={f.id}>
+                  <button
+                    type="button"
+                    className={[
+                      styles.miniFile,
+                      f.id === activeId && styles.miniActive,
+                    ]
+                      .filter(Boolean)
+                      .join(" ")}
+                    title={f.name}
+                    aria-label={f.name}
+                    aria-current={f.id === activeId ? "page" : undefined}
+                    onClick={() => router.push(`/dashboard?file=${f.id}`)}
+                  >
+                    {f.name.slice(0, 2)}
+                  </button>
+                </li>
+              ),
+            )}
           </ul>
         )}
         <div className={styles.bottom}>
           <div className={styles.prefs}>
-            <LanguageSwitcher value={locale} onChange={setLocale} label={prefs.language} />
-            <ThemeSwitcher value={theme ?? systemTheme} onChange={setTheme} labels={{ group: prefs.theme, light: prefs.light, dark: prefs.dark }} />
+            <LanguageSwitcher
+              value={locale}
+              onChange={setLocale}
+              label={prefs.language}
+            />
+            <ThemeSwitcher
+              value={theme ?? systemTheme}
+              onChange={setTheme}
+              labels={{
+                group: prefs.theme,
+                light: prefs.light,
+                dark: prefs.dark,
+              }}
+            />
           </div>
-          <button type="button" className={styles.toggle} aria-label={label} title={label} aria-expanded={!collapsed} onClick={toggleSidebar}>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+          <button
+            type="button"
+            className={styles.toggle}
+            aria-label={label}
+            title={label}
+            aria-expanded={!collapsed}
+            onClick={toggleSidebar}
+          >
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden
+            >
               <rect x="3" y="4" width="18" height="16" rx="2" />
               <path d="M9 4v16" />
               <path d={collapsed ? "m13 10 2 2-2 2" : "m15 10-2 2 2 2"} />
@@ -174,7 +240,10 @@ export function AppSidebar() {
       <MoveModal
         name={toMove?.fileName ?? null}
         current={toMove?.folderId ?? ""}
-        folders={[{ value: "", label: t.uploadModal.noFolder }, ...folders.map((f) => ({ value: f.id, label: f.name }))]}
+        folders={[
+          { value: "", label: t.uploadModal.noFolder },
+          ...folders.map((f) => ({ value: f.id, label: f.name })),
+        ]}
         onClose={() => setMoveId(null)}
         onConfirm={move}
         t={t}
@@ -186,8 +255,17 @@ export function AppSidebar() {
         t={t}
         texts={t.deleteFolderModal}
       />
-      <DeleteModal name={toDelete?.fileName ?? null} onClose={() => setDeleteId(null)} onConfirm={removeFile} t={t} />
-      <Toast message={toast} onClose={() => setToast(null)} className={styles.toast} />
+      <DeleteModal
+        name={toDelete?.fileName ?? null}
+        onClose={() => setDeleteId(null)}
+        onConfirm={removeFile}
+        t={t}
+      />
+      <Toast
+        message={toast}
+        onClose={() => setToast(null)}
+        className={styles.toast}
+      />
     </aside>
   );
 }

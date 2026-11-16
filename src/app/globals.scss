@@ -46,3 +46,7 @@ a {
   textarea,
   select { @include text(input-touch); }
 }
+
+// scroll ყველგან მუშაობს, ზოლი არსად ჩანს
+* { scrollbar-width: none; }
+*::-webkit-scrollbar { display: none; }
