@@ -8,7 +8,7 @@ export enum Theme {
 }
 
 /** localStorage-ის გასაღები — layout.tsx-ის inline სკრიპტიც ამას კითხულობს */
-export const PREFERENCES_KEY = "praisteka-preferences";
+export const PREFERENCES_KEY = "priceteka-preferences";
 
 interface PreferencesState {
   locale: Locale;

@@ -19,7 +19,7 @@ export const useSessionStore = create<SessionState>()(
       signOut: () => set({ token: null }),
     }),
     {
-      name: "praisteka-session",
+      name: "priceteka-session",
       skipHydration: true,
       partialize: ({ token }) => ({ token }),
       onRehydrateStorage: () => () => useSessionStore.setState({ hydrated: true }),

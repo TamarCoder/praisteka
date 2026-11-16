@@ -79,7 +79,7 @@ export function DateRangePicker({ value, onChange, label, labels, single = false
       </button>
 
       {open && (
-        <div className={styles.popover} role="dialog" aria-label={label}>
+        <div className={[styles.popover, single && styles.inline].filter(Boolean).join(" ")} role="dialog" aria-label={label}>
           <div className={styles.head}>
             <button type="button" className={styles.nav} aria-label={labels.prev} onClick={() => shift(-1)}>
               ‹

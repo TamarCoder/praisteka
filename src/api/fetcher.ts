@@ -1,7 +1,7 @@
 import { getSessionToken, requireSession } from "@/lib/session";
 import type { ApiErrorResponse } from "@/types/api";
 
-// praisteka-backend-ის მისამართი — .env.local-ში NEXT_PUBLIC_API_URL
+// priceteka-backend-ის მისამართი — .env.local-ში NEXT_PUBLIC_API_URL
 export const API_URL = (
   process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000"
 ).replace(/\/+$/u, "");

@@ -92,8 +92,8 @@ export default function LandingPage() {
         <LandingHero
           title={t.hero.title}
           text={t.hero.text}
-          primaryAction={{ label: t.hero.start, href: "/register" }}
-          secondaryAction={{ label: t.hero.demo, href: "/dashboard" }}
+          primaryAction={{ label: t.hero.register, href: "/register" }}
+          secondaryAction={{ label: t.hero.login, href: "/login" }}
         />
         <LandingScene className={styles.scene} plates={plates} />
       </div>

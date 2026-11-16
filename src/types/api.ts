@@ -1,6 +1,6 @@
 import type { SheetData } from "@/lib/readWorkbook";
 
-// Shapes of praisteka-backend requests and responses
+// Shapes of priceteka-backend requests and responses
 
 /** Nest-ის შეცდომის პასუხი */
 export interface ApiErrorResponse {

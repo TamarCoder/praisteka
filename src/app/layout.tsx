@@ -54,7 +54,8 @@ export const viewport: Viewport = {
 };
 
 // გვერდის დახატვამდე: შენახული თემა, ენა და ზოლის მდგომარეობა <html>-ზე, რომ არაფერი „აციმციმდეს“
-const preferencesScript = `try{var s=(JSON.parse(localStorage.getItem(${JSON.stringify(PREFERENCES_KEY)})||"{}").state)||{};var r=document.documentElement;if(s.theme)r.dataset.th=s.theme;if(s.locale)r.lang=s.locale;if(s.sidebarCollapsed)r.dataset.sidebar="collapsed"}catch(e){}`;
+// ძველი სახელის (praisteka-*) გასაღებები ერთხელ გადადის priceteka-*-ში — შესვლა და პარამეტრები არ იკარგება
+const preferencesScript = `try{Object.keys(localStorage).forEach(function(k){if(k.indexOf("praisteka-")===0){var n="priceteka-"+k.slice(10);if(localStorage.getItem(n)===null)localStorage.setItem(n,localStorage.getItem(k));localStorage.removeItem(k)}});var s=(JSON.parse(localStorage.getItem(${JSON.stringify(PREFERENCES_KEY)})||"{}").state)||{};var r=document.documentElement;if(s.theme)r.dataset.th=s.theme;if(s.locale)r.lang=s.locale;if(s.sidebarCollapsed)r.dataset.sidebar="collapsed"}catch(e){}`;
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (

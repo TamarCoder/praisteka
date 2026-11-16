@@ -1,5 +1,5 @@
 // "დამიმახსოვრე": ელფოსტა — localStorage-ში, პაროლი — ბრაუზერის პაროლების მენეჯერში (არა localStorage-ში)
-const KEY = "praisteka-remember-email";
+const KEY = "priceteka-remember-email";
 
 export function getRememberedEmail(): string | null {
   try {

@@ -6,7 +6,7 @@ export const en: Dictionary = {
     about: "About",
     pricing: "Pricing",
     contacts: "Contact",
-    login: "Log in",
+    login: "Sign up / Log in",
     menu: "Menu",
   },
   prefs: {
@@ -20,8 +20,8 @@ export const en: Dictionary = {
   hero: {
     title: "Your Excel files, one search",
     text: "No more digging through folders. Upload your files and search everything in one place.",
-    start: "Get started",
-    demo: "View demo",
+    register: "Sign up",
+    login: "Log in",
   },
   scene: {
     filesTitle: "Files",
@@ -39,9 +39,9 @@ export const en: Dictionary = {
     { icon: "⧉", title: "Copy", text: "Select a cell and copy it, just like in Excel." },
   ],
   about: {
-    lead: "Praisteka is one place for all your Excel files.",
+    lead: "Priceteka is one place for all your Excel files.",
     paragraphs: [
-      "When hundreds of files sit in different folders, finding the right record takes a long time. With Praisteka you upload your files once and then search everything in one place.",
+      "When hundreds of files sit in different folders, finding the right record takes a long time. With Priceteka you upload your files once and then search everything in one place.",
       "A file opens just like in Excel: with sheets, columns and cells. Older versions are kept too, so you can always see what changed.",
     ],
   },
