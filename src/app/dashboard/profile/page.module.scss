@@ -1,0 +1,177 @@
+@use 'tokens/colors' as *;
+@use 'tokens/typography' as *;
+@use 'tokens/spacing' as *;
+@use 'tokens/motion' as *;
+@use 'tokens/mixins' as *;
+@use 'tokens/breakpoints' as *;
+
+// ისტორიის გვერდის ბარათის მსგავსი
+.card {
+  margin: sp(3) sp(3) sp(3) 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+  border: 1px solid c(line);
+  border-radius: $radius-lg;
+  background: c(paper);
+
+  @include down(desktop) { margin: sp(2) sp(3) sp(3); }
+  @include down(tablet) { margin: sp(2); }
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: sp(3);
+  padding: sp(4) sp(5);
+  border-bottom: 1px solid c(line);
+
+  @include up(desktop-lg) { padding: sp(4) sp(6); }
+  @include down(tablet) { padding: sp(3); }
+}
+
+.back {
+  flex: none;
+  width: $h-control;
+  height: $h-control;
+  padding: 0;
+
+  @include touch { width: $h-touch; height: $h-touch; }
+}
+
+.title {
+  margin: 0;
+  @include text(subtitle);
+}
+
+.body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.identity,
+.section {
+  padding: sp(5);
+  border-bottom: 1px solid c(line);
+
+  @include up(desktop-lg) { padding: sp(5) sp(6); }
+  @include down(tablet) { padding: sp(4) sp(3); }
+}
+
+.identity {
+  display: flex;
+  align-items: center;
+  gap: sp(4);
+}
+
+.avatar {
+  flex: none;
+  width: 72px;
+  height: 72px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: $radius-pill;
+  background: c(acc);
+  color: c(accink);
+  @include text(display);
+}
+
+.who {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.name {
+  margin: 0;
+  overflow-wrap: anywhere;
+  @include text(title);
+}
+
+.muted {
+  margin: 0;
+  color: c(mute);
+  @include text(small);
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: sp(4);
+
+  &:last-child { border-bottom: none; }
+}
+
+.heading {
+  margin: 0;
+  @include text(body-strong);
+}
+
+.fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: sp(4);
+  max-width: 720px;
+
+  @include down(tablet) { grid-template-columns: minmax(0, 1fr); }
+}
+
+.save {
+  align-self: flex-start;
+
+  @include down(tablet) { align-self: stretch; min-height: $h-touch; }
+}
+
+.lists {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: sp(5);
+
+  @include down(desktop) { grid-template-columns: minmax(0, 1fr); }
+}
+
+.label {
+  margin: 0 0 sp(2);
+  color: c(mute);
+  @include text(small-strong);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border: 1px solid c(line);
+  border-radius: $radius;
+
+  li + li { border-top: 1px solid c(line); }
+}
+
+.item {
+  @include transition(background-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: sp(3);
+  padding: sp(3);
+  color: c(ink);
+
+  &:hover { background: c(tab); color: c(ink); }
+  &:focus-visible { @include focus-ring; }
+
+  @include touch { min-height: $h-touch; }
+  @include reduced-motion;
+}
+
+.itemName {
+  min-width: 0;
+  @include text(body);
+  @include truncate;
+}
+
+.toast { z-index: 20; }

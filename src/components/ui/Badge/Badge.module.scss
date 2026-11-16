@@ -1,0 +1,17 @@
+@use 'tokens/colors' as *;
+@use 'tokens/typography' as *;
+@use 'tokens/spacing' as *;
+
+.badge {
+  @include text(badge);
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 7px;
+  border-radius: $radius-pill;
+  white-space: nowrap;
+}
+
+.accent {
+  background: c(acc);
+  color: c(accink);
+}

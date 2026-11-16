@@ -1,0 +1,40 @@
+@use 'tokens/colors' as *;
+@use 'tokens/typography' as *;
+@use 'tokens/spacing' as *;
+@use 'tokens/breakpoints' as *;
+
+// 3 Landing:34-40, 0 Board:109-110, 137
+.hero {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.title {
+  @include text(hero-title);
+  text-wrap: balance;
+}
+
+.text {
+  @include text(hero-text);
+  max-width: $w-hero-text;
+  color: c(land-mute);
+  text-wrap: pretty;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: sp(2) + 2px;
+  margin-top: sp(1);
+
+  // მობილური: ღილაკები ერთმანეთის ქვეშ, სრული სიგანით
+  @include down(tablet) {
+    width: 100%;
+    flex-direction: column;
+
+    > * { width: 100%; }
+  }
+}

@@ -1,0 +1,94 @@
+@use 'tokens/colors' as *;
+@use 'tokens/typography' as *;
+@use 'tokens/spacing' as *;
+@use 'tokens/motion' as *;
+@use 'tokens/mixins' as *;
+
+.dropdown {
+  position: relative;
+  min-width: 200px;
+}
+
+.trigger {
+  @include transition(border-color, box-shadow);
+  width: 100%;
+  height: $h-control;
+  display: flex;
+  align-items: center;
+  gap: sp(2);
+  padding: 0 sp(3);
+  border: 1px solid c(line);
+  border-radius: $radius;
+  background: c(paper);
+  color: c(ink);
+  text-align: left;
+  cursor: pointer;
+  @include text(body);
+
+  &:hover { border-color: c(mute); }
+  &:focus-visible { @include focus-ring; }
+
+  @include reduced-motion;
+}
+
+.open { @include focus-ring; }
+
+.value {
+  flex: 1;
+  min-width: 0;
+  @include truncate;
+}
+
+.chevron {
+  @include transition(transform);
+  flex: none;
+  width: 16px;
+  height: 16px;
+  color: c(mute);
+
+  .open & { transform: rotate(180deg); }
+
+  @include reduced-motion;
+}
+
+.menu {
+  @include enter;
+  position: absolute;
+  top: calc(100% + #{sp(1)});
+  left: 0;
+  right: 0;
+  z-index: 30;
+  max-height: 280px;
+  margin: 0;
+  padding: sp(1);
+  overflow-y: auto;
+  list-style: none;
+  border: 1px solid c(line);
+  border-radius: $radius-lg;
+  background: c(paper);
+  box-shadow: $shadow-pop;
+
+  @include reduced-motion;
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  gap: sp(2);
+  padding: sp(2) sp(2) + 2px;
+  border-radius: $radius-xs;
+  color: c(ink);
+  cursor: pointer;
+  @include text(body);
+}
+
+.focused { background: c(tab); }
+
+.selected { @include text(body-strong); }
+
+.check {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  color: c(acc);
+}

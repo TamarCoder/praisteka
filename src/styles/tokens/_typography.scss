@@ -1,0 +1,38 @@
+// ტიპოგრაფია — წყარო: 5 Style Guide - Typography
+// შრიფტები იტვირთება layout.tsx-ში (next/font), აქ მათი CSS ცვლადებია
+@use 'sass:list';
+@use 'sass:map';
+
+$font-serif: var(--font-serif), 'Noto Serif Georgian', serif;          // სათაურები
+$font-sans: var(--font-sans), 'Noto Sans Georgian', system-ui, sans-serif; // ინტერფეისი
+$font-mono: var(--font-mono), 'JetBrains Mono', monospace;            // ციფრები, თარიღები, კოდები
+
+// (ოჯახი, წონა, ზომა, ხაზის სიმაღლე)
+$text: (
+  display: ($font-serif, 700, 28px, 1.2),      // სადაზღვევოს სახელი
+  title: ($font-serif, 700, 20px, 1.3),        // აპის სახელი, მოდალი
+  subtitle: ($font-serif, 500, 16px, 1.4),     // ფაილის სათაური, empty/error სათაური
+  body: ($font-sans, 400, 13px, 1.5),          // ძირითადი
+  body-strong: ($font-sans, 600, 13px, 1.5),   // ღილაკი, მონიშნული, ცხრილის სათაური
+  small: ($font-sans, 400, 12px, 1.5),         // label, მეტა
+  small-strong: ($font-sans, 600, 12px, 1.5),  // ველის შეცდომა, აქტიური ჩანართი
+  hint: ($font-sans, 400, 11px, 1.4),          // dropzone-ის მინიშნება
+  mono: ($font-mono, 400, 12px, 1.5),          // ციფრები
+  micro: ($font-mono, 400, 11px, 1.4),         // რიგის ნომრები, სვეტის ასოები
+  // აპის ეკრანიდან (1 App), სკალის გარეთ
+  button-lg: ($font-sans, 600, 14px, 1.4),     // ლენდინგის ღილაკი
+  // ლენდინგი (0 Board:109-112)
+  hero-title: ($font-serif, 700, clamp(26px, min(4.2vw, 8vh), 56px), 1.15),
+  hero-text: ($font-sans, 400, clamp(14px, 1.3vw, 17px), 1.6),
+  logo-sm: ($font-serif, 700, 19px, 1.3),
+  logo-lg: ($font-serif, 700, 24px, 1.3),     // ავტორიზაცია (2 Auth:24)
+  meta: ($font-sans, 400, 11.5px, 1.5),        // ვერსიის მეტა, ფაილის ქვესათაური
+  badge: ($font-sans, 600, 10.5px, 1.4),       // „მოქმედი“ ნიშანი
+  input-touch: ($font-sans, 400, 16px, 1.5)    // ველი ტელეფონზე: 16px-ზე ნაკლებს iOS ადიდებს
+);
+
+@mixin text($name) {
+  @if not map.has-key($text, $name) { @error 'უცნობი ტექსტის სტილი: #{$name}'; }
+  $t: map.get($text, $name);
+  font: #{list.nth($t, 2)} #{list.nth($t, 3)}/#{list.nth($t, 4)} list.nth($t, 1);
+}

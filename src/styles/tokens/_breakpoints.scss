@@ -1,0 +1,35 @@
+// ეკრანის ზღვრები — mobile < 768 ≤ tablet < 1024 ≤ desktop < 1440 ≤ desktop-lg
+@use 'sass:map';
+
+$breakpoints: (
+  tablet: 768px,
+  desktop: 1024px,
+  desktop-lg: 1440px
+);
+
+$w-content-max: 1600px; // დიდ ეკრანზე შიგთავსი ამაზე მეტად არ იწელება
+$h-short: 420px;        // ამაზე დაბალ ეკრანზე 3D სცენა იმალება (0 Board:137)
+
+@function bp($name) {
+  @if not map.has-key($breakpoints, $name) { @error 'უცნობი ზღვარი: #{$name}'; }
+  @return map.get($breakpoints, $name);
+}
+
+// $name და მეტი
+@mixin up($name) {
+  @media (min-width: bp($name)) { @content; }
+}
+
+// $name-ზე ნაკლები
+@mixin down($name) {
+  @media (max-width: bp($name) - 0.02px) { @content; }
+}
+
+@mixin short {
+  @media (max-height: $h-short - 0.02px) { @content; }
+}
+
+// სენსორული ეკრანი, მაუსის გარეშე
+@mixin touch {
+  @media (pointer: coarse) { @content; }
+}

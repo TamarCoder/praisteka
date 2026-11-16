@@ -1,0 +1,53 @@
+@use 'tokens/colors' as *;
+@use 'tokens/typography' as *;
+@use 'tokens/spacing' as *;
+@use 'tokens/motion' as *;
+@use 'tokens/mixins' as *;
+
+.control {
+  display: grid;
+  grid-template-columns: repeat(var(--segment-count, 2), minmax(0, 1fr));
+  gap: 3px;
+  padding: 3px;
+  border-radius: $radius;
+  background: c(tab);
+}
+
+.item {
+  @include text(body);
+  @include transition(background-color);
+  height: $h-segment;
+  border: none;
+  border-radius: $radius-xs;
+  background: transparent;
+  color: c(ink);
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: 2px solid c(acc);
+    outline-offset: 1px;
+  }
+
+  @include reduced-motion;
+}
+
+.active {
+  @include text(body-strong);
+  background: c(paper);
+}
+
+// ── ზომები ──
+.sm {
+  .item {
+    @include text(small);
+    height: $h-control-sm;
+    min-width: $h-control-sm;
+    padding: 0 sp(2);
+  }
+
+  .active {
+    @include text(small-strong);
+  }
+}
+
+.disabled { @include disabled; }

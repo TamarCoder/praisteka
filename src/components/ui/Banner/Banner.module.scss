@@ -1,0 +1,26 @@
+@use 'tokens/colors' as *;
+@use 'tokens/typography' as *;
+@use 'tokens/spacing' as *;
+
+.banner {
+  @include text(body);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: sp(3);
+  padding: sp(2) + 2px sp(3) + 2px;
+  border-radius: $radius;
+  color: c(ink);
+}
+
+.error {
+  border: 1px solid c(err);
+}
+
+.close {
+  @include text(body-strong);
+  border: none;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}

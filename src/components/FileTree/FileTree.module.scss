@@ -1,0 +1,131 @@
+@use 'tokens/colors' as *;
+@use 'tokens/typography' as *;
+@use 'tokens/spacing' as *;
+@use 'tokens/motion' as *;
+@use 'tokens/mixins' as *;
+
+.tree {
+  display: flex;
+  flex-direction: column;
+  gap: sp(1);
+  min-height: 0;
+  padding-right: sp(4);
+  overflow-y: auto;
+}
+
+.list,
+.nested {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.nested {
+  margin-left: sp(3);
+  padding-left: sp(2);
+  border-left: 1px solid c(line);
+}
+
+.summary,
+.file {
+  @include transition(background-color);
+  width: 100%;
+  display: flex;
+  border-radius: $radius;
+  color: c(ink);
+  cursor: pointer;
+
+  &:hover { background: c(tab); }
+  &:focus-visible { @include focus-ring; }
+
+  @include reduced-motion;
+}
+
+.summary {
+  align-items: center;
+  justify-content: space-between;
+  gap: sp(2);
+  padding: sp(2) sp(2) + 2px;
+  list-style: none;
+  @include text(body-strong);
+
+  &::-webkit-details-marker { display: none; }
+  &::before { content: "▸"; color: c(mute); }
+}
+
+.folder[open] > .summary::before { content: "▾"; }
+
+.file {
+  flex-direction: column;
+  gap: 2px;
+  padding: sp(2) sp(2) + 2px;
+  border: none;
+  background: transparent;
+  text-align: left;
+  @include text(body);
+}
+
+.item {
+  position: relative;
+
+  .file { padding-right: sp(6) + 4px; }
+}
+
+.delete {
+  @include transition(opacity);
+  position: absolute;
+  top: sp(1);
+  right: sp(1);
+  padding: sp(1) sp(2);
+  border: none;
+  border-radius: $radius-xs;
+  background: transparent;
+  color: c(mute);
+  opacity: 0;
+  cursor: pointer;
+  @include text(small);
+
+  &:hover { color: c(err); background: c(paper); }
+  &:focus-visible { opacity: 1; @include focus-ring; }
+
+  @include reduced-motion;
+}
+
+.item:hover .delete,
+.item:focus-within .delete { opacity: 1; }
+
+@media (hover: none) {
+  .delete { opacity: 1; }
+}
+
+.active,
+.active:hover { background: c(tab); }
+
+.name {
+  flex: 1;
+  min-width: 0;
+  @include truncate;
+}
+
+.meta {
+  max-width: 100%;
+  color: c(mute);
+  @include text(meta);
+  @include truncate;
+}
+
+.count {
+  color: c(mute);
+  @include text(mono);
+}
+
+.empty {
+  flex: none;
+  margin-right: sp(4);
+  padding: sp(5) sp(3);
+  border: 1px dashed c(line);
+  border-radius: $radius-lg;
+}

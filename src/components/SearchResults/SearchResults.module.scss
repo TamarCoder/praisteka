@@ -1,0 +1,125 @@
+@use 'tokens/colors' as *;
+@use 'tokens/typography' as *;
+@use 'tokens/spacing' as *;
+@use 'tokens/motion' as *;
+@use 'tokens/mixins' as *;
+
+.results {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: sp(4);
+  padding: sp(4) sp(5);
+  overflow-y: auto;
+}
+
+.group {
+  border: 1px solid c(line);
+  border-radius: $radius-lg;
+  overflow: hidden;
+}
+
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: sp(2);
+  padding: sp(3) sp(4);
+  background: c(tab);
+}
+
+.file {
+  padding: 0;
+  border: none;
+  background: none;
+  color: c(ink);
+  cursor: pointer;
+  @include text(body-strong);
+
+  &:hover { text-decoration: underline; }
+  &:focus-visible { @include focus-ring; }
+}
+
+.sheet {
+  color: c(mute);
+  @include text(small);
+
+  &::before { content: "· "; }
+}
+
+.count {
+  margin-left: auto;
+  color: c(mute);
+  @include text(mono);
+}
+
+.list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: sp(3);
+  padding: 0 sp(4);
+  border-top: 1px solid c(line);
+}
+
+.pick {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  accent-color: c(acc);
+  cursor: pointer;
+}
+
+.cells {
+  @include transition(background-color);
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: sp(4);
+  padding: sp(2) + 2px sp(2);
+  border: none;
+  border-radius: $radius-xs;
+  background: transparent;
+  color: c(ink);
+  text-align: left;
+  cursor: pointer;
+  @include text(small);
+
+  &:hover { background: c(tab); }
+  &:focus-visible { @include focus-ring; }
+
+  @include reduced-motion;
+}
+
+.n {
+  flex: none;
+  width: 32px;
+  color: c(mute);
+  @include text(micro);
+}
+
+.cell {
+  min-width: 0;
+  max-width: 320px;
+  @include truncate;
+}
+
+.number {
+  flex: none;
+  @include text(mono);
+}
+
+.more {
+  margin: 0;
+  padding: sp(2) sp(4);
+  border-top: 1px solid c(line);
+  color: c(mute);
+  @include text(small);
+}

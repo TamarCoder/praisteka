@@ -1,0 +1,63 @@
+// ფერები — წყარო: 4 Style Guide - Colors, ლენდინგი: 3 Landing
+@use 'sass:map';
+
+$light: (
+  bg: #dfe5ea,      // აპის ფონი, გვერდითი ზოლი
+  paper: #f8fafb,   // პანელები, ცხრილი, მოდალი
+  ink: #17212b,     // ძირითადი ტექსტი, ძლიერი საზღვრები
+  mute: #566573,    // მეორეხარისხოვანი ტექსტი
+  line: #c3cdd6,    // საზღვრები, გამყოფები
+  acc: #1d4f8f,     // მთავარი ღილაკი, მონიშნული უჯრა, ნიშანი
+  accink: #ffffff,  // ტექსტი acc-ზე
+  tab: #d0d9e1,     // მონიშვნა, არააქტიური ჩანართი, რიგის ნომრები
+  err: #b3261e,     // შეცდომა
+  // ლენდინგი
+  land-mute: #3f4d5a,
+  g-fill: rgba(248, 250, 251, .5),
+  g-fill-strong: rgba(248, 250, 251, .72),
+  g-edge: rgba(255, 255, 255, .85),
+  g-line: rgba(23, 33, 43, .14),
+  g-shadow: rgba(23, 33, 43, .28),
+  blob1: #7fb2f0,
+  blob2: #1d4f8f,
+  blob3: #f8fafb
+);
+
+$dark: (
+  bg: #12171d,
+  paper: #1b222a,
+  ink: #e3e9ef,
+  mute: #94a3b1,
+  line: #323d49,
+  acc: #7fb2f0,
+  accink: #0d1a2a,
+  tab: #27313c,
+  err: #ff8a80,
+  land-mute: #b4c0cc,
+  g-fill: rgba(40, 52, 66, .42),
+  g-fill-strong: rgba(40, 52, 66, .66),
+  g-edge: rgba(255, 255, 255, .16),
+  g-line: rgba(255, 255, 255, .12),
+  g-shadow: rgba(0, 0, 0, .55),
+  blob1: #1d4f8f,
+  blob2: #7fb2f0,
+  blob3: #27313c
+);
+
+$overlay: rgba(20, 18, 14, .55); // მოდალის ფონი
+
+// გლობალურ სტილში ერთხელ: @include theme-vars;
+@mixin theme-vars {
+  :root { @each $k, $v in $light { --a-#{$k}: #{$v}; } }
+  [data-th='dark'] { color-scheme: dark; @each $k, $v in $dark { --a-#{$k}: #{$v}; } }
+  // სისტემის მუქი თემა, თუ data-th='light' ხელით არ არის არჩეული
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-th='light']) { color-scheme: dark; @each $k, $v in $dark { --a-#{$k}: #{$v}; } }
+  }
+}
+
+// ფერი ყოველთვის ამით: c(ink) → var(--a-ink)
+@function c($name) {
+  @if not map.has-key($light, $name) { @error 'უცნობი ფერი: #{$name}'; }
+  @return var(--a-#{$name});
+}

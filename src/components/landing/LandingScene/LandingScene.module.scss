@@ -1,0 +1,37 @@
+@use 'tokens/spacing' as *;
+@use 'tokens/motion' as *;
+
+// 3 Landing:43-45, 0 Board:133
+.wrap {
+  min-width: 0;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  perspective: $scene-perspective;
+}
+
+.frame {
+  flex: none;
+  width: $scene-w;
+  height: $scene-h;
+}
+
+.scene {
+  position: relative;
+  width: $scene-w;
+  height: $scene-h;
+  transform-style: preserve-3d;
+  transition: transform $dur-tilt $ease-out;
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+.layer {
+  position: absolute;
+  inset: 0;
+  transform: translateZ(var(--z, 0));
+  transform-style: preserve-3d;
+}

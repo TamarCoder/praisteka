@@ -1,0 +1,20 @@
+// მდგომარეობები — წყარო: 6 Style Guide - Components
+@use 'colors' as *;
+@use 'spacing' as *;
+
+@mixin spinner($size: 14px, $color: c(mute)) {
+  width: $size; height: $size; box-sizing: border-box; border-radius: 50%;
+  border: 2px solid $color; border-top-color: transparent;
+  animation: pt-spin .8s linear infinite;
+}
+@mixin skeleton($h: 12px) {
+  height: $h; border-radius: $radius-sm;
+  background: linear-gradient(90deg, c(tab) 25%, c(line) 50%, c(tab) 75%); background-size: 200% 100%;
+  animation: pt-shimmer 1.2s linear infinite;
+  @media (prefers-reduced-motion: reduce) { animation: none; background: c(tab); }
+}
+@mixin focus-ring { outline: none; border-color: c(ink); box-shadow: 0 0 0 1px c(ink); }
+@mixin disabled { opacity: .45; pointer-events: none; }
+@mixin field-error { border-color: c(err); } // + შეტყობინება ველის ქვეშ: text(small), 600, c(err)
+@mixin cell-selected { outline: 2px solid c(acc); outline-offset: -2px; }
+@mixin truncate { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }

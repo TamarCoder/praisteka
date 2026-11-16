@@ -1,0 +1,64 @@
+@use 'tokens/colors' as *;
+@use 'tokens/typography' as *;
+@use 'tokens/spacing' as *;
+
+.about {
+  display: flex;
+  flex-direction: column;
+  gap: sp(3);
+}
+
+.lead {
+  @include text(subtitle);
+}
+
+.text {
+  @include text(body);
+  color: c(mute);
+}
+
+.list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: sp(2);
+  margin-top: sp(1);
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: sp(3);
+  padding: sp(3);
+  border: 1px solid c(line);
+  border-radius: $radius;
+  background: c(bg);
+}
+
+.icon {
+  @include text(subtitle);
+  flex: none;
+  width: $h-control;
+  height: $h-control;
+  display: grid;
+  place-items: center;
+  border-radius: $radius;
+  background: c(acc);
+  color: c(accink);
+}
+
+.body {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.title {
+  @include text(body-strong);
+}
+
+.itemText {
+  @include text(small);
+  color: c(mute);
+}

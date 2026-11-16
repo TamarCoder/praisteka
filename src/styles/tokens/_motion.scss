@@ -1,0 +1,28 @@
+// ანიმაცია — წყარო: 6 Style Guide - Components (ანიმაცია)
+$dur-fast: 120ms;   // hover, დაჭერა, ფოკუსი
+$dur-base: 180ms;   // მონიშვნა, ჩანართი, toast-ის გამოჩენა
+$dur-slow: 240ms;   // მოდალის გახსნა, პანელის შეცვლა
+$dur-exit: 120ms;   // გაქრობა (მხოლოდ fade)
+$ease-out: ease-out;
+$ease-in: ease-in;
+$ease-enter: cubic-bezier(.2, .8, .2, 1);
+$dur-tilt: 250ms;   // ლენდინგის 3D სცენის დახრა
+
+// გლობალურ სტილში ერთხელ: @include keyframes;
+@mixin keyframes {
+  @keyframes pt-spin { to { transform: rotate(360deg); } }
+  @keyframes pt-shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+  @keyframes pt-rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  @keyframes pt-fade-out { to { opacity: 0; } }
+}
+
+@mixin transition($props...) {
+  transition-property: $props;
+  transition-duration: $dur-fast;
+  transition-timing-function: $ease-out;
+}
+@mixin enter { animation: pt-rise $dur-slow $ease-enter; }   // მოდალი, toast
+@mixin exit { animation: pt-fade-out $dur-exit $ease-in forwards; }
+@mixin reduced-motion {
+  @media (prefers-reduced-motion: reduce) { animation: none !important; transition: none !important; }
+}

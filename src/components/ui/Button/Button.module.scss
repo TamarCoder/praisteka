@@ -1,0 +1,106 @@
+@use 'tokens/colors' as *;
+@use 'tokens/typography' as *;
+@use 'tokens/spacing' as *;
+@use 'tokens/motion' as *;
+@use 'tokens/mixins' as *;
+
+.button {
+  @include text(body-strong);
+  @include transition(filter, border-color, background-color, transform, box-shadow);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: sp(2) + 2px;
+  padding: 0 sp(4);
+  border: 1px solid transparent;
+  border-radius: $radius;
+  background: transparent;
+  color: c(ink);
+  cursor: pointer;
+  white-space: nowrap;
+
+  &:focus-visible {
+    outline: 2px solid c(acc);
+    outline-offset: 2px;
+  }
+
+  &:disabled {
+    @include disabled;
+  }
+
+  @include reduced-motion;
+}
+
+// ── ზომები ──
+.sm {
+  @include text(button-lg);
+  height: $h-nav;
+  border-radius: $radius-lg;
+}
+.md { height: $h-control; }
+.lg { height: $h-button; }
+.xl {
+  @include text(button-lg);
+  height: $h-button-lg;
+  padding: 0 sp(5);
+  border-radius: $radius-xl;
+}
+
+// ── ვარიანტები ──
+.primary {
+  background: c(acc);
+  color: c(accink);
+
+  &:hover { filter: brightness(1.12); }
+  &:active { transform: translateY(1px); }
+
+  &.xl { box-shadow: $shadow-acc; }
+}
+
+.secondary {
+  border-color: c(line);
+  @include text(body);
+
+  &:hover { border-color: c(ink); }
+}
+
+.text {
+  padding: 0 sp(1);
+
+  &:hover { text-decoration: underline; }
+}
+
+.outline {
+  border-color: c(ink);
+
+  &:hover { background: c(tab); }
+}
+
+.glass {
+  background: c(g-fill);
+  border-color: c(g-edge);
+  backdrop-filter: $blur-glass-btn;
+  -webkit-backdrop-filter: $blur-glass-btn;
+
+  &:hover { background: c(g-fill-strong); }
+}
+
+.ghost {
+  &:hover { background: c(g-fill-strong); }
+
+  // მონიშნული ნავიგაციის პუნქტი
+  &.active {
+    background: c(g-fill-strong);
+    color: c(acc);
+  }
+}
+
+// ── მდგომარეობები ──
+.fullWidth { width: 100%; }
+
+.loading {
+  cursor: progress;
+
+  // დიზაინში loading ღილაკი სრული სიმკვეთრით ჩანს, მხოლოდ disabled ქრება
+  &:disabled { opacity: 1; }
+}

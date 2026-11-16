@@ -1,0 +1,120 @@
+@use 'tokens/colors' as *;
+@use 'tokens/typography' as *;
+@use 'tokens/spacing' as *;
+@use 'tokens/motion' as *;
+@use 'tokens/mixins' as *;
+@use 'tokens/breakpoints' as *;
+
+.wrap { position: relative; flex: none; }
+
+%circle {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: $radius-pill;
+  background: c(acc);
+  color: c(accink);
+}
+
+.avatar {
+  @extend %circle;
+  @include transition(box-shadow);
+  width: $h-search;
+  height: $h-search;
+  border: none;
+  cursor: pointer;
+  @include text(body-strong);
+
+  &:hover,
+  &[aria-expanded='true'] { box-shadow: 0 0 0 2px c(paper), 0 0 0 4px c(acc); }
+  &:focus-visible { outline: 2px solid c(acc); outline-offset: 2px; }
+
+  @include touch { width: $h-touch; height: $h-touch; }
+  @include reduced-motion;
+}
+
+.avatarSm { @extend %circle; width: 28px; height: 28px; @include text(small-strong); }
+
+.menu {
+  @include enter;
+  position: absolute;
+  top: calc(100% + #{sp(2)});
+  right: 0;
+  z-index: 30;
+  width: 240px;
+  padding: sp(1);
+  border: $border;
+  border-radius: $radius-lg;
+  background: c(paper);
+  box-shadow: $shadow-pop;
+
+  @include reduced-motion;
+}
+
+.who {
+  display: flex;
+  align-items: center;
+  gap: sp(2);
+  margin-bottom: sp(1);
+  padding: sp(2) sp(2) sp(3);
+  border-bottom: $border;
+}
+
+.whoText {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.whoName {
+  @include text(body-strong);
+  @include truncate;
+}
+
+.email {
+  min-width: 0;
+  color: c(mute);
+  @include text(small);
+  @include truncate;
+}
+
+.item {
+  @include transition(background-color);
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: sp(2);
+  padding: sp(2);
+  border: none;
+  border-radius: $radius-xs;
+  background: transparent;
+  color: c(ink);
+  text-align: left;
+  cursor: pointer;
+  @include text(body);
+
+  svg { flex: none; width: 16px; height: 16px; color: c(mute); }
+
+  &:hover { background: c(tab); }
+  &:focus-visible { @include focus-ring; }
+
+  @include touch { min-height: $h-touch; }
+  @include reduced-motion;
+}
+
+.logout {
+  margin-top: sp(1);
+  border-top: $border;
+  border-radius: 0 0 $radius-xs $radius-xs;
+  color: c(err);
+
+  svg { color: c(err); }
+}
+
+
+
+
+
+
+

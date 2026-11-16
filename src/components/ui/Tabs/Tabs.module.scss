@@ -1,0 +1,38 @@
+@use 'tokens/colors' as *;
+@use 'tokens/typography' as *;
+@use 'tokens/spacing' as *;
+@use 'tokens/motion' as *;
+
+.tabs {
+  display: flex;
+}
+
+.sheet {
+  background: c(tab);
+
+  .tab {
+    @include text(small);
+    @include transition(background-color, color);
+    padding: 7px sp(3) + 2px;
+    border: none;
+    border-right: 1px solid c(line);
+    background: transparent;
+    color: c(mute);
+    cursor: pointer;
+
+    &:hover { color: c(ink); }
+
+    &:focus-visible {
+      outline: 2px solid c(acc);
+      outline-offset: -2px;
+    }
+
+    @include reduced-motion;
+  }
+
+  .active {
+    @include text(small-strong);
+    background: c(paper);
+    color: c(ink);
+  }
+}

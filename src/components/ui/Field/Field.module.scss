@@ -1,0 +1,18 @@
+@use 'tokens/colors' as *;
+@use 'tokens/typography' as *;
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  @include text(small);
+  color: c(mute);
+}
+
+.error {
+  @include text(small-strong);
+  color: c(err);
+}

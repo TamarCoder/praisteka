@@ -1,0 +1,58 @@
+// ზომები — წყარო: _tokens.scss, 6 Style Guide - Components
+@use 'sass:map';
+@use 'colors' as *;
+
+$space: (1: 4px, 2: 8px, 3: 12px, 4: 16px, 5: 24px, 6: 32px);
+@function sp($n) {
+  @if not map.has-key($space, $n) { @error 'უცნობი დაშორება: #{$n}'; }
+  @return map.get($space, $n);
+}
+
+$radius-sm: 4px;     // skeleton, checkbox
+$radius-xs: 6px;     // პატარა select, სეგმენტის ელემენტი
+$radius: 8px;        // ღილაკი, ველი, სიის ელემენტი, toast
+$radius-lg: 10px;    // პანელი, მოდალი
+$radius-xl: 12px;    // ლენდინგის ღილაკი
+$radius-glass: 18px; // ლენდინგის ფირფიტა
+$radius-pill: 999px; // ნიშანი
+
+$h-control: 38px;    // input, select, მეორადი ღილაკი
+$h-control-sm: 28px; // განყოფილების ფილტრი (1 App:94)
+$h-segment: 34px;    // შესვლა/რეგისტრაცია გადამრთველი
+$h-dropzone: 96px;   // ფაილის ჩასაგდები ველი
+$h-search: 36px;     // ძებნის ველი
+$h-button: 42px;     // მთავარი ღილაკი
+$h-button-lg: 48px;  // ლენდინგის ღილაკი
+$h-tab: 44px;        // სადაზღვევოს ჩანართი
+$h-touch: 44px;      // თითით დასაჭერი ღილაკი ტელეფონზე
+$w-sidebar: 240px;
+$w-sidebar-lg: 272px; // დიდ ეკრანზე
+$w-sidebar-collapsed: 72px; // დაკეცილი ზოლი
+$w-modal: 440px;
+$w-modal-lg: 560px;  // ტექსტიანი მოდალი („ჩვენს შესახებ“)
+
+$shadow-pop: 0 16px 32px -12px c(g-shadow); // ჩამოსაშლელი სია, კალენდარი
+$w-calendar: 288px;
+
+$border: 1px solid c(line);
+
+$shadow-acc: 0 12px 28px -12px c(acc); // ლენდინგის მთავარი ღილაკი
+$blur-glass-btn: blur(14px);           // მინის ღილაკი
+$blur-glass: blur(10px);               // მინის ფირფიტა
+$shadow-glass: -18px 24px 40px -18px c(g-shadow); // მინის ფირფიტა
+
+// ── ლენდინგი (3 Landing, 0 Board:127-137) ──
+$h-bar: 56px;                            // ზედა ზოლი
+$h-nav: 36px;                            // ზოლის ბმული „შესვლა“
+$radius-bar: 16px;                       // ზედა ზოლი
+$radius-chip: 9px;                       // ფირფიტის სტრიქონი
+$blur-bar: blur(18px) saturate(1.4);     // ზედა ზოლი
+$shadow-glass-base: -30px 40px 60px -20px c(g-shadow); // ქვედა ფირფიტა
+$page-gutter: clamp(20px, 5vw, 72px);
+$hero-gap: clamp(24px, 4vw, 56px);
+$w-hero-text: 460px;
+$scene-w: 320px;
+$scene-h: 380px;
+$scene-perspective: 1500px;
+$h-scene-tablet: 460px;                  // 3D სცენის სიმაღლე ტაბლეტზე, ტექსტის ქვეშ
+$h-scene-mobile: 340px;                  // იგივე მობილურზე

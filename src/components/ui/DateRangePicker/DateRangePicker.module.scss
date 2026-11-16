@@ -1,0 +1,147 @@
+@use 'tokens/colors' as *;
+@use 'tokens/typography' as *;
+@use 'tokens/spacing' as *;
+@use 'tokens/motion' as *;
+@use 'tokens/mixins' as *;
+
+.picker {
+  position: relative;
+  min-width: 240px;
+}
+
+.trigger {
+  @include transition(border-color, box-shadow);
+  width: 100%;
+  height: $h-control;
+  display: flex;
+  align-items: center;
+  gap: sp(2);
+  padding: 0 sp(3);
+  border: 1px solid c(line);
+  border-radius: $radius;
+  background: c(paper);
+  color: c(ink);
+  text-align: left;
+  cursor: pointer;
+  @include text(body);
+
+  &:hover { border-color: c(mute); }
+  &:focus-visible { @include focus-ring; }
+
+  @include reduced-motion;
+}
+
+.open { @include focus-ring; }
+
+.empty { color: c(mute); }
+
+.icon {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  color: c(mute);
+}
+
+.value {
+  flex: 1;
+  min-width: 0;
+  @include truncate;
+}
+
+.popover {
+  @include enter;
+  position: absolute;
+  top: calc(100% + #{sp(1)});
+  right: 0;
+  z-index: 30;
+  width: $w-calendar;
+  padding: sp(3);
+  border: 1px solid c(line);
+  border-radius: $radius-lg;
+  background: c(paper);
+  box-shadow: $shadow-pop;
+
+  @include reduced-motion;
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: sp(2);
+}
+
+.month { @include text(body-strong); }
+
+.nav {
+  @include transition(background-color);
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: $radius;
+  background: transparent;
+  color: c(ink);
+  cursor: pointer;
+  @include text(subtitle);
+
+  &:hover { background: c(tab); }
+  &:focus-visible { @include focus-ring; }
+
+  @include reduced-motion;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  row-gap: 2px;
+}
+
+.weekday {
+  padding: sp(1) 0;
+  color: c(mute);
+  text-align: center;
+  @include text(micro);
+}
+
+.day {
+  @include transition(background-color, color);
+  height: 34px;
+  border: none;
+  border-radius: $radius;
+  background: transparent;
+  color: c(ink);
+  cursor: pointer;
+  @include text(small);
+
+  &:hover { background: c(tab); }
+  &:focus-visible { @include focus-ring; }
+
+  @include reduced-motion;
+}
+
+.today { @include text(small-strong); text-decoration: underline; }
+
+.inside {
+  border-radius: 0;
+  background: c(tab);
+}
+
+.edge,
+.edge:hover {
+  background: c(acc);
+  color: c(accink);
+}
+
+.clear {
+  width: 100%;
+  margin-top: sp(2);
+  padding: sp(2);
+  border: none;
+  border-top: 1px solid c(line);
+  background: transparent;
+  color: c(acc);
+  cursor: pointer;
+  @include text(small-strong);
+
+  &:focus-visible { @include focus-ring; }
+}

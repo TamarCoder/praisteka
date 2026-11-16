@@ -1,0 +1,22 @@
+@use 'tokens/colors' as *;
+@use 'tokens/typography' as *;
+@use 'tokens/spacing' as *;
+@use 'tokens/motion' as *;
+
+.toast {
+  @include text(body-strong);
+  @include enter;
+  position: fixed;
+  left: 50%;
+  bottom: calc(22px + env(safe-area-inset-bottom));
+  max-width: calc(100vw - #{sp(6)});
+  text-align: center;
+  z-index: 11;
+  translate: -50% 0;
+  padding: sp(2) + 2px sp(4);
+  border-radius: $radius;
+  background: c(ink);
+  color: c(paper);
+
+  @include reduced-motion;
+}

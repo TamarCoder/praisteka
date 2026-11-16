@@ -1,0 +1,21 @@
+@use 'tokens/colors' as *;
+@use 'tokens/typography' as *;
+@use 'tokens/spacing' as *;
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: sp(4);
+  margin: 0;
+}
+
+.file {
+  display: flex;
+  flex-direction: column;
+  gap: sp(1) + 2px;
+}
+
+.error {
+  color: c(err);
+  @include text(small-strong);
+}

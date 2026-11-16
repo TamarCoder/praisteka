@@ -1,0 +1,70 @@
+@use 'tokens/colors' as *;
+@use 'tokens/typography' as *;
+@use 'tokens/spacing' as *;
+
+.report {
+  display: flex;
+  flex-direction: column;
+  gap: sp(2);
+  min-height: 0;
+}
+
+.summary {
+  margin: 0;
+  @include text(body-strong);
+}
+
+.line {
+  margin: 0;
+  @include text(small);
+}
+
+.muted {
+  margin: 0;
+  color: c(mute);
+  @include text(small);
+}
+
+.scroll {
+  max-height: 320px;
+  overflow: auto;
+  border: 1px solid c(line);
+  border-radius: $radius;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  @include text(small);
+
+  th {
+    position: sticky;
+    top: 0;
+    padding: sp(2);
+    background: c(tab);
+    color: c(mute);
+    text-align: left;
+    @include text(small-strong);
+  }
+
+  td {
+    padding: sp(2);
+    border-top: 1px solid c(line);
+    overflow-wrap: anywhere;
+  }
+}
+
+.state {
+  padding: sp(5) sp(4);
+  border: 1px dashed c(line);
+  border-radius: $radius;
+}
+
+.mono { @include text(mono); }
+
+.before {
+  color: c(err);
+  text-decoration: line-through;
+}
+
+.after { color: c(acc); }

@@ -1,0 +1,39 @@
+@use 'tokens/colors' as *;
+@use 'tokens/spacing' as *;
+@use 'tokens/motion' as *;
+@use 'tokens/breakpoints' as *;
+
+.card {
+  margin: sp(3) sp(3) sp(3) 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  min-height: 0;
+  overflow: hidden;
+  border: 1px solid c(line);
+  border-radius: $radius-lg;
+  background: c(paper);
+
+  @include down(desktop) { margin: sp(2) sp(3) sp(3); }
+  @include down(tablet) { margin: sp(2); }
+}
+
+.file {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+}
+
+.loading {
+  flex: 1;
+  margin: sp(4);
+  height: auto;
+}
+
+
+.toast { z-index: 20; }
+
+.state {
+  flex: 1;
+  padding: sp(6) sp(4);
+}

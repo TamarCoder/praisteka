@@ -1,0 +1,20 @@
+@use 'tokens/colors' as *;
+@use 'tokens/breakpoints' as *;
+
+// 1 App:26 — ზოლი + ბარათი; ზოლის სიგანე ზოლშივეა (AppSidebar.module.scss)
+// safe area: iPhone-ის ჭრილი, ქვედა ზოლი და გვერდები (viewportFit: cover)
+.shell {
+  position: relative;
+  height: 100dvh;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  background: c(bg);
+  color: c(ink);
+
+  // ტაბლეტი/მობილური: ზემოთ ზოლი ☰-ით, ქვემოთ ბარათი დარჩენილ სიმაღლეზე
+  @include down(desktop) {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+}

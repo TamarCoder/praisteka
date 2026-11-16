@@ -1,0 +1,22 @@
+@use 'tokens/colors' as *;
+@use 'tokens/mixins' as *;
+
+.spinner {
+  @include spinner(var(--spinner-size, 14px), c(mute));
+  display: inline-block;
+  flex: none;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation-duration: 2.4s;
+  }
+}
+
+.mute {
+  border-color: c(mute);
+  border-top-color: transparent;
+}
+
+.onAccent {
+  border-color: c(accink);
+  border-top-color: transparent;
+}

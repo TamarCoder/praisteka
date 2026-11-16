@@ -1,0 +1,60 @@
+@use 'tokens/colors' as *;
+@use 'tokens/typography' as *;
+@use 'tokens/spacing' as *;
+@use 'tokens/motion' as *;
+@use 'tokens/mixins' as *;
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  @include transition(background-color);
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: sp(2) + 2px;
+  border: none;
+  border-radius: $radius;
+  background: transparent;
+  color: c(ink);
+  text-align: left;
+  cursor: pointer;
+
+  &:hover { background: c(tab); }
+  &:focus-visible { @include focus-ring; }
+
+  @include reduced-motion;
+}
+
+.active,
+.active:hover { background: c(tab); }
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: sp(2);
+}
+
+.title {
+  min-width: 0;
+  @include text(body-strong);
+  @include truncate;
+}
+
+.meta {
+  color: c(mute);
+  @include text(meta);
+}
+
+.note {
+  @include text(small);
+}
+

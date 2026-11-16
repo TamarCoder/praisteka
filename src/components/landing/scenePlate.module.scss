@@ -1,0 +1,97 @@
+// სამი ფირფიტის საერთო სტილი — 3 Landing:46-67
+@use 'tokens/colors' as *;
+@use 'tokens/typography' as *;
+@use 'tokens/spacing' as *;
+@use 'tokens/mixins' as *;
+
+.plate {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  gap: sp(2);
+}
+
+// ქვედა ფირფიტას უფრო დიდი ჩრდილი აქვს
+.base { box-shadow: $shadow-glass-base; }
+.tableGap { gap: sp(2) + 2px; }
+
+.caption {
+  @include text(micro);
+  color: c(land-mute);
+}
+
+// მონო შრიფტი, ზომა მშობლისგან
+.mono {
+  @include text(mono);
+  font-size: inherit;
+  line-height: inherit;
+}
+
+// ── სტრიქონები ──
+.row {
+  height: $h-control;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 sp(3);
+  border-radius: $radius-chip;
+}
+
+.rowTall { height: $h-tab; }
+.rowLine { border: 1px solid c(g-line); }
+
+.rowAccent {
+  @include text(body-strong);
+  background: c(acc);
+  color: c(accink);
+}
+
+.rowCurrent {
+  @include text(body-strong);
+  background: c(g-fill-strong);
+}
+
+// ── ძებნა და ცხრილი ──
+.search {
+  height: $h-search;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 0 sp(3);
+  border: 1.5px solid c(ink);
+  border-radius: $radius-chip;
+}
+
+.caret {
+  width: 1.5px;
+  height: 15px;
+  background: c(acc);
+}
+
+.priceRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 56px;
+  align-items: center;
+  padding: 6px 0;
+}
+
+.priceHead {
+  @include text(small-strong);
+  padding: sp(1) 0;
+  border-bottom: 1px solid c(ink);
+}
+
+.priceLine { border-bottom: 1px solid c(g-line); }
+.priceLine:last-child { border-bottom: none; }
+
+.priceSelected {
+  @include text(body-strong);
+  @include cell-selected;
+  margin: 0 (-(sp(2)));
+  padding: sp(2);
+  border-radius: 7px;
+}
+
+.price { text-align: right; }
+.truncate { @include truncate; }

@@ -1,0 +1,11 @@
+@use 'tokens/spacing' as *;
+
+// 2 Auth:38
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: sp(3) + 2px;
+  margin: 0;
+}
+
+.forgot { align-self: center; }

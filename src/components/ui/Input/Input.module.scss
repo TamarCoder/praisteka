@@ -1,0 +1,58 @@
+@use 'tokens/colors' as *;
+@use 'tokens/typography' as *;
+@use 'tokens/spacing' as *;
+@use 'tokens/motion' as *;
+@use 'tokens/mixins' as *;
+
+.input {
+  @include text(body);
+  @include transition(border-color, box-shadow);
+  width: 100%;
+  padding: 0 sp(3);
+  border-radius: $radius;
+  color: c(ink);
+  outline: none;
+
+  &::placeholder { color: c(mute); }
+  &:disabled { @include disabled; }
+
+  @include reduced-motion;
+}
+
+.default {
+  height: $h-control;
+  border: 1px solid c(line);
+  background: c(paper);
+
+  &:focus { @include focus-ring; }
+}
+
+.wrap {
+  position: relative;
+  display: block;
+}
+
+.icon {
+  position: absolute;
+  top: 50%;
+  left: sp(3);
+  width: 16px;
+  height: 16px;
+  color: c(mute);
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.search {
+  height: $h-search;
+  padding-left: sp(6) + 4px;
+  border: 1.5px solid c(ink);
+  background: transparent;
+
+  &:focus { box-shadow: 0 0 0 1px c(ink); }
+}
+
+.invalid,
+.invalid:focus {
+  @include field-error;
+}

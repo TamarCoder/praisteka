@@ -1,0 +1,28 @@
+@use 'tokens/colors' as *;
+@use 'tokens/spacing' as *;
+
+.panel {
+  color: c(ink);
+}
+
+.paper {
+  border: 1px solid c(line);
+  border-radius: $radius-lg;
+  background: c(paper);
+}
+
+.glass,
+.glassStrong {
+  border: 1px solid c(g-edge);
+  border-radius: $radius-glass;
+  box-shadow: $shadow-glass;
+  backdrop-filter: $blur-glass;
+  -webkit-backdrop-filter: $blur-glass;
+}
+
+.glass { background: c(g-fill); }
+.glassStrong { background: c(g-fill-strong); }
+
+.pad-none { padding: 0; }
+.pad-md { padding: sp(4) + 2px; }
+.pad-lg { padding: sp(5); }

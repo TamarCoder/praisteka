@@ -1,0 +1,157 @@
+@use 'tokens/colors' as *;
+@use 'tokens/typography' as *;
+@use 'tokens/spacing' as *;
+@use 'tokens/motion' as *;
+@use 'tokens/breakpoints' as *;
+
+.card {
+  margin: sp(3) sp(3) sp(3) 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+  border: 1px solid c(line);
+  border-radius: $radius-lg;
+  background: c(paper);
+
+  @include down(desktop) { margin: sp(2) sp(3) sp(3); }
+  @include down(tablet) { margin: sp(2); }
+}
+
+// FileHeader-ის მსგავსი: მარცხნივ სათაური + ფილტრები, მარჯვნივ ღილაკი, ქვემოთ ხაზი
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: sp(4);
+  padding: sp(4) sp(5);
+  border-bottom: 1px solid c(line);
+
+  @include up(desktop-lg) { padding: sp(4) sp(6); }
+
+  @include down(desktop) {
+    flex-direction: column-reverse;
+    align-items: stretch;
+    padding: sp(3);
+  }
+}
+
+.start {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: sp(4);
+
+}
+
+// პატარა კვადრატული „უკან“ — ფილტრების წინ
+.back {
+  flex: none;
+  width: $h-control;
+  height: $h-control;
+  padding: 0;
+
+  @include touch { width: $h-touch; height: $h-touch; }
+}
+
+// მობილური: ← + ფაილი ერთ ხაზზე, პერიოდი ქვემოთ სრულ სიგანეზე
+.filters {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  gap: sp(2);
+
+  @include down(tablet) {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+
+    > * { min-width: 0; }
+    > :last-child { grid-column: 1 / -1; }
+  }
+}
+
+.body {
+  flex: 1;
+  display: grid;
+  grid-template-columns: $w-sidebar + 80px minmax(0, 1fr);
+  min-height: 0;
+
+  @include down(desktop) {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+}
+
+.list,
+.detail {
+  min-width: 0;
+  min-height: 0;
+  padding: sp(4);
+  overflow-y: auto;
+}
+
+.list {
+  border-right: 1px solid c(line);
+
+  @include down(desktop) {
+    max-height: 40dvh;
+    border-right: none;
+    border-bottom: 1px solid c(line);
+  }
+}
+
+.detail {
+  display: flex;
+  flex-direction: column;
+  gap: sp(4);
+}
+
+.detailHead,
+.previewHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: sp(3);
+}
+
+.subtitle {
+  margin: 0;
+  overflow-wrap: anywhere;
+  @include text(subtitle);
+}
+
+.label {
+  margin: 0;
+  @include text(body-strong);
+}
+
+.muted {
+  margin: 0;
+  color: c(mute);
+  @include text(small);
+}
+
+.preview {
+  flex: none;
+  height: 420px;
+
+  @include down(tablet) { height: 60dvh; }
+  display: flex;
+  flex-direction: column;
+  border: 1px solid c(line);
+  border-radius: $radius;
+  overflow: hidden;
+}
+
+.state {
+  flex: 1;
+  min-height: 320px;
+  padding: sp(6) sp(4);
+}
+
+.loading { height: 120px; }
+
+.toast { z-index: 20; }
+

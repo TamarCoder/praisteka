@@ -1,0 +1,88 @@
+@use 'tokens/colors' as *;
+@use 'tokens/spacing' as *;
+@use 'tokens/breakpoints' as *;
+
+// 3 Landing:25, 0 Board:127
+.bar {
+  position: relative;
+  z-index: 5;
+  flex: none;
+  height: $h-bar;
+  margin-top: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: sp(4);
+  padding: 0 sp(2) + 2px 0 sp(4);
+  border: 1px solid c(g-edge);
+  border-radius: $radius-bar;
+  background: c(g-fill);
+  backdrop-filter: $blur-bar;
+  -webkit-backdrop-filter: $blur-bar;
+
+  @include down(tablet) {
+    margin-top: sp(3);
+    padding: 0 sp(1) 0 sp(3);
+  }
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: sp(1);
+
+  // ტაბლეტი და მობილური: ჩამოსაშლელი მენიუ ზოლის ქვეშ
+  @include down(desktop) {
+    position: absolute;
+    top: calc(100% + #{sp(2)});
+    left: 0;
+    right: 0;
+    display: none;
+    flex-direction: column;
+    align-items: stretch;
+    padding: sp(2);
+    border: 1px solid c(g-edge);
+    border-radius: $radius-bar;
+    background: c(g-fill-strong);
+    backdrop-filter: $blur-bar;
+    -webkit-backdrop-filter: $blur-bar;
+  }
+}
+
+.navOpen {
+  @include down(desktop) { display: flex; }
+}
+
+.navItem {
+  @include down(desktop) { justify-content: flex-start; }
+}
+
+// ენა/თემა: დესკტოპზე ზოლში, ტაბლეტ/მობილურზე მენიუს ბოლოში
+.barPrefs {
+  @include down(desktop) { display: none; }
+}
+
+.navPrefs {
+  display: none;
+
+  @include down(desktop) {
+    display: block;
+    margin-top: sp(1);
+    padding: sp(2) sp(2) sp(1);
+    border-top: 1px solid c(g-line);
+  }
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: sp(1);
+}
+
+.burger {
+  display: none;
+  width: $h-nav;
+  padding: 0;
+
+  @include down(desktop) { display: inline-flex; }
+}

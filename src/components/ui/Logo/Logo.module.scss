@@ -1,0 +1,29 @@
+@use 'tokens/colors' as *;
+@use 'tokens/typography' as *;
+@use 'tokens/spacing' as *;
+
+.logo {
+  display: inline-flex;
+  align-items: center;
+  gap: sp(2) + 2px;
+  color: c(ink);
+}
+
+.mark {
+  flex: none;
+  width: var(--logo-size);
+  height: var(--logo-size);
+  background: c(acc);
+  mask: url('/logo-mask.png') center / contain no-repeat;
+  -webkit-mask: url('/logo-mask.png') center / contain no-repeat;
+}
+
+.name {
+  @include text(title);
+}
+
+.sm { --logo-size: 30px; }
+.sm .name { @include text(logo-sm); }
+.md { --logo-size: 34px; }
+.lg { --logo-size: 40px; }
+.lg .name { @include text(logo-lg); }

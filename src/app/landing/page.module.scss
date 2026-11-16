@@ -1,0 +1,69 @@
+@use 'tokens/colors' as *;
+@use 'tokens/spacing' as *;
+@use 'tokens/breakpoints' as *;
+
+// 3 Landing:20, 33; 0 Board:137
+.page {
+  position: relative;
+  height: 100vh;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  padding: 0 $page-gutter;
+  overflow: hidden;
+  background: c(bg);
+
+  // ტაბლეტი და მობილური: გვერდი იზრდება და ისქროლება
+  @include down(desktop) {
+    height: auto;
+    min-height: 100dvh;
+  }
+}
+
+// დიდ ეკრანზე შიგთავსი ცენტრში, მაქსიმუმ $w-content-max
+.content {
+  width: 100%;
+  max-width: $w-content-max;
+  margin-inline: auto;
+}
+
+.grid {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: $hero-gap;
+  align-items: center;
+  padding-bottom: clamp(12px, 5vh, 56px);
+
+  @include down(desktop) {
+    grid-template-columns: minmax(0, 1fr);
+    align-content: start;
+    padding-top: clamp(40px, 8vh, 80px);
+  }
+}
+
+.scene {
+  @include down(desktop) {
+    height: $h-scene-tablet;
+  }
+
+  @include down(tablet) { height: $h-scene-mobile; }
+  @include short { display: none; }
+}
+
+// ენისა და თემის გადამრთველები ზოლში
+.prefs {
+  display: flex;
+  align-items: center;
+  gap: sp(2);
+}
+
+// უპირატესობის ბარათები — მხოლოდ მობილურზე
+.features {
+  display: none;
+  padding-bottom: sp(6);
+
+  @include down(tablet) { display: flex; }
+}

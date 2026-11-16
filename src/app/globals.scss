@@ -1,0 +1,48 @@
+@use 'tokens/colors' as *;
+@use 'tokens/typography' as *;
+@use 'tokens/motion' as *;
+@use 'tokens/breakpoints' as *;
+
+@include theme-vars;
+@include keyframes;
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html {
+  height: 100%;
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+  // macOS-ის touchpad-ზე გვერდი „რეზინასავით“ არ უნდა გადაიწიოს
+  overscroll-behavior: none;
+}
+
+body {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: c(bg);
+  color: c(ink);
+  @include text(body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  color: c(acc);
+  text-decoration: none;
+
+  &:hover {
+    color: c(ink);
+  }
+}
+
+// ტელეფონზე ველზე დაჭერისას iOS გვერდს არ ადიდებს
+@include touch {
+  input,
+  textarea,
+  select { @include text(input-touch); }
+}

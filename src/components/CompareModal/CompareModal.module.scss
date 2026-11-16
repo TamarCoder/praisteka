@@ -1,0 +1,53 @@
+@use 'tokens/colors' as *;
+@use 'tokens/typography' as *;
+@use 'tokens/spacing' as *;
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: sp(4);
+}
+
+.item {
+  display: flex;
+  flex-direction: column;
+  gap: sp(2);
+}
+
+.title {
+  margin: 0;
+  @include text(body-strong);
+}
+
+.scroll {
+  overflow-x: auto;
+  border: 1px solid c(line);
+  border-radius: $radius;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  @include text(small);
+
+  th,
+  td {
+    padding: sp(2);
+    text-align: left;
+    white-space: nowrap;
+    border-left: 1px solid c(line);
+
+    &:first-child { border-left: none; }
+  }
+
+  th {
+    background: c(tab);
+    color: c(mute);
+    @include text(small-strong);
+  }
+}
+
+.number {
+  text-align: right;
+  @include text(mono);
+}

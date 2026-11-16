@@ -1,0 +1,23 @@
+@use 'tokens/colors' as *;
+@use 'tokens/spacing' as *;
+
+// 2 Auth:20
+.page {
+  position: relative;
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  // ზემოთ ადგილი ენა/თემის გადამრთველებისთვის
+  padding: sp(6) * 2 sp(4) sp(6);
+  background: c(bg);
+}
+
+.prefs {
+  position: absolute;
+  top: sp(4);
+  right: sp(4);
+  display: flex;
+  align-items: center;
+  gap: sp(2);
+}

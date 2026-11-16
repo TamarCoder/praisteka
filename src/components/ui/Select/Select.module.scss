@@ -1,0 +1,37 @@
+@use 'tokens/colors' as *;
+@use 'tokens/typography' as *;
+@use 'tokens/spacing' as *;
+@use 'tokens/motion' as *;
+@use 'tokens/mixins' as *;
+
+.select {
+  @include transition(border-color, box-shadow);
+  border: 1px solid c(line);
+  background: c(paper);
+  color: c(ink);
+  cursor: pointer;
+
+  &:focus { @include focus-ring; }
+  &:disabled { @include disabled; }
+
+  @include reduced-motion;
+}
+
+.md {
+  @include text(body);
+  height: $h-control;
+  padding: 0 sp(2);
+  border-radius: $radius;
+}
+
+.sm {
+  @include text(small);
+  height: $h-control-sm;
+  padding: 0 sp(1) + 2px;
+  border-radius: $radius-xs;
+}
+
+.invalid,
+.invalid:focus {
+  @include field-error;
+}

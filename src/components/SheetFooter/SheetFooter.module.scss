@@ -1,0 +1,35 @@
+@use 'tokens/colors' as *;
+@use 'tokens/typography' as *;
+@use 'tokens/spacing' as *;
+@use 'tokens/breakpoints' as *;
+
+.footer {
+  display: flex;
+  align-items: stretch;
+  border-top: 1px solid c(line);
+  background: c(tab);
+}
+
+.tabs {
+  min-width: 0;
+  overflow-x: auto;
+}
+
+.hint {
+  margin-left: auto;
+  padding: 7px sp(3) + 2px;
+  color: c(mute);
+  white-space: nowrap;
+  @include text(small);
+
+  @include down(desktop) { display: none; }
+}
+
+.action {
+  flex: none;
+  margin-left: auto;
+  border-left: 1px solid c(line);
+  border-radius: 0;
+
+  .hint + & { margin-left: 0; }
+}

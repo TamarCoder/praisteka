@@ -1,0 +1,171 @@
+@use 'tokens/colors' as *;
+@use 'tokens/typography' as *;
+@use 'tokens/spacing' as *;
+@use 'tokens/breakpoints' as *;
+@use 'tokens/motion' as *;
+@use 'tokens/mixins' as *;
+
+// 1 App:48 — დესკტოპი: გვერდითი ზოლი; ტაბლეტი/მობილური: ზედა ზოლი ☰-ით (LandingTopBar-ის მსგავსად)
+.sidebar {
+  // სიგანე აქ: ახალი ელემენტი ანიმაციას არ იწყებს, დაჭერისას — რბილად
+  width: $w-sidebar;
+  transition: width $dur-base $ease-out;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: sp(5) - 2px 0 sp(4) sp(4);
+
+  @include reduced-motion;
+  @include up(desktop-lg) { width: $w-sidebar-lg; }
+
+  @include down(desktop) {
+    position: relative;
+    z-index: 5;
+    width: auto;
+    padding: sp(3) sp(3) 0;
+  }
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: sp(2);
+  margin-bottom: sp(5) - 2px;
+
+  @include down(desktop) {
+    position: relative;
+    z-index: 2;
+    margin-bottom: 0;
+    padding: 0 sp(1);
+  }
+}
+
+.burger {
+  display: none;
+  width: $h-touch;
+  height: $h-touch;
+  padding: 0;
+  @include text(subtitle);
+
+  @include down(desktop) { display: inline-flex; }
+}
+
+// დესკტოპი: შიგთავსი პირდაპირ ზოლშია
+.menu {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+
+  // ტაბლეტი/მობილური: მარცხნიდან გამოსული მენიუ მთელ ეკრანზე
+  @include down(desktop) {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    padding:
+      calc(#{$h-touch + sp(6)} + env(safe-area-inset-top))
+      calc(#{sp(4)} + env(safe-area-inset-right))
+      calc(#{sp(4)} + env(safe-area-inset-bottom))
+      calc(#{sp(4)} + env(safe-area-inset-left));
+    background: c(bg);
+    overscroll-behavior: contain;
+    translate: -100% 0;
+    visibility: hidden;
+    transition: translate $dur-base $ease-out, visibility 0s linear $dur-base;
+  }
+
+  @include reduced-motion;
+}
+
+.menuOpen {
+  @include down(desktop) {
+    translate: 0 0;
+    visibility: visible;
+    transition: translate $dur-base $ease-out;
+  }
+}
+
+.toggle {
+  @include transition(background-color, color);
+  flex: none;
+  width: $h-search;
+  height: $h-search;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  border-radius: $radius;
+  background: transparent;
+  color: c(mute);
+  cursor: pointer;
+
+  svg { flex: none; width: 18px; height: 18px; }
+
+  &:hover { background: c(tab); color: c(ink); }
+  &:focus-visible { @include focus-ring; }
+
+  @include reduced-motion;
+
+  // დაკეცვა მხოლოდ დესკტოპზე
+  @include down(desktop) { display: none; }
+}
+
+.bottom {
+  margin-top: auto;
+  padding: sp(4) sp(4) 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: sp(2);
+
+  @include down(desktop) {
+    margin-top: auto;
+    padding: sp(4) 0 0;
+    border-top: $border;
+  }
+}
+
+.prefs {
+  display: flex;
+  align-items: center;
+  gap: sp(2);
+}
+
+// დაკეცილი (მხოლოდ დესკტოპი): ნიშანი და ღილაკი ზუსტად ცენტრში
+.collapsed {
+  @include up(desktop) {
+    width: $w-sidebar-collapsed;
+    align-items: center;
+    padding: sp(5) - 2px 0 sp(4);
+
+    .head { margin-bottom: 0; }
+    .menu { width: 100%; }
+    .menu > :not(.bottom),
+    .prefs { display: none; }
+
+    .bottom {
+      width: 100%;
+      justify-content: center;
+      padding: 0;
+    }
+  }
+}
+
+.toast { z-index: 20; }
+
+// ჩატვირთვის ჩარჩო: დაკეცილზე — 72px, ნიშანი იმავე ადგილზე, რაც ცენტრში (72 − 34) / 2
+.placeholder {
+  overflow: hidden;
+  transition: none;
+
+  @include down(desktop) { min-height: $h-touch + sp(3); }
+}
+
+:global(html[data-sidebar="collapsed"]) .placeholder {
+  @include up(desktop) {
+    width: $w-sidebar-collapsed;
+    padding-left: ($w-sidebar-collapsed - 34px) * 0.5;
+  }
+}

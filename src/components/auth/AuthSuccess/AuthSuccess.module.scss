@@ -1,0 +1,8 @@
+@use 'tokens/spacing' as *;
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: sp(2);
+}

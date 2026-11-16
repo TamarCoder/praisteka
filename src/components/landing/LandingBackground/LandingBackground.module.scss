@@ -1,0 +1,44 @@
+@use 'tokens/colors' as *;
+
+// 3 Landing:21-23, 0 Board:66-68
+.background {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.blob {
+  position: absolute;
+  border-radius: 50%;
+}
+
+.blob1 {
+  width: 52vw;
+  height: 52vw;
+  right: -8vw;
+  top: -14vw;
+  background: c(blob1);
+  filter: blur(90px);
+  opacity: .75;
+}
+
+.blob2 {
+  width: 38vw;
+  height: 38vw;
+  right: 22vw;
+  bottom: -20vw;
+  background: c(blob2);
+  filter: blur(110px);
+  opacity: .5;
+}
+
+.blob3 {
+  width: 34vw;
+  height: 34vw;
+  left: -10vw;
+  top: 10vh;
+  background: c(blob3);
+  filter: blur(80px);
+  opacity: .9;
+}

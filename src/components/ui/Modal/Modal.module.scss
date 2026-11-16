@@ -1,0 +1,106 @@
+@use 'tokens/colors' as *;
+@use 'tokens/typography' as *;
+@use 'tokens/spacing' as *;
+@use 'tokens/motion' as *;
+@use 'tokens/breakpoints' as *;
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: sp(4);
+  background: $overlay;
+
+  // მობილური: ფანჯარა ქვემოდან ამოდის (bottom sheet)
+  @include down(tablet) {
+    align-items: flex-end;
+    padding: env(safe-area-inset-top) 0 0;
+  }
+}
+
+.modal {
+  @include enter;
+  max-width: 100%;
+  max-height: calc(100dvh - #{sp(6)});
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: sp(4);
+  padding: sp(5);
+  border: 1px solid c(ink);
+  border-radius: $radius-lg;
+  background: c(paper);
+  color: c(ink);
+
+  @include reduced-motion;
+
+  @include down(tablet) {
+    width: 100%;
+    max-height: calc(100dvh - #{sp(6)} - env(safe-area-inset-top));
+    padding: sp(5) sp(4) calc(#{sp(4)} + env(safe-area-inset-bottom));
+    border-width: 1px 0 0;
+    border-radius: $radius-lg $radius-lg 0 0;
+    overscroll-behavior: contain;
+  }
+}
+
+.md { width: $w-modal; }
+.lg { width: $w-modal-lg; }
+
+.md,
+.lg {
+  @include down(tablet) { width: 100%; }
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: sp(3);
+}
+
+.title {
+  @include text(title);
+}
+
+.close {
+  @include text(body-strong);
+  @include transition(background-color);
+  flex: none;
+  width: $h-search;
+  height: $h-search;
+  margin: -(sp(1)) (-(sp(2))) 0 0;
+  border: none;
+  border-radius: $radius;
+  background: transparent;
+  color: c(mute);
+  cursor: pointer;
+
+  &:hover {
+    background: c(tab);
+    color: c(ink);
+  }
+
+  &:focus-visible {
+    outline: 2px solid c(acc);
+    outline-offset: 2px;
+  }
+
+  @include reduced-motion;
+
+  @include touch { width: $h-touch; height: $h-touch; }
+}
+
+.footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: sp(2);
+
+  // მობილური: ღილაკები სრულ სიგანეზე
+  @include down(tablet) {
+    > * { flex: 1; min-height: $h-touch; }
+  }
+}
