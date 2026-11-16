@@ -1,10 +1,11 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useState } from "react";
 import { AuthCard } from "@/components/auth/AuthCard/AuthCard";
 import { AuthMode } from "@/components/auth/AuthCard/AuthCard.types";
 import { LoginForm } from "@/components/auth/LoginForm/LoginForm";
+import type { LoginFormProps } from "@/components/auth/LoginForm/LoginForm.types";
 import { LanguageSwitcher } from "@/components/ui/LanguageSwitcher/LanguageSwitcher";
 import { ThemeSwitcher } from "@/components/ui/ThemeSwitcher/ThemeSwitcher";
 import { useSystemTheme } from "@/hooks/useSystemTheme";
@@ -42,26 +43,33 @@ export default function LoginPage() {
         modeLabels={t.auth.modes}
         busy={busy}
       >
-        <LoginForm
-          t={t.auth}
-          onBusyChange={setBusy}
-          forgotHref="/forgot-password"
-          onSubmit={async (values) => {
-            const email = values.email.trim();
-            try {
-              const { token } = await authApi.login({ email, password: values.password });
-              useSessionStore.getState().signIn(token);
-              router.push("/dashboard");
-            } catch (error) {
-              reportError(ErrorAction.Login, error, email);
-              if (!(error instanceof ApiError)) return t.auth.errors.network;
-              if (error.status === 403) return t.auth.errors.blocked;
-              if (error.status === 429) return t.auth.errors.tooMany;
-              return t.auth.errors.credentials;
-            }
-          }}
-        />
+        <Suspense>
+          <PrefilledLoginForm
+            t={t.auth}
+            onBusyChange={setBusy}
+            forgotHref="/forgot-password"
+            onSubmit={async (values) => {
+              const email = values.email.trim();
+              try {
+                const { token } = await authApi.login({ email, password: values.password });
+                useSessionStore.getState().signIn(token);
+                router.push("/dashboard");
+              } catch (error) {
+                reportError(ErrorAction.Login, error, email);
+                if (!(error instanceof ApiError)) return t.auth.errors.network;
+                if (error.status === 403) return t.auth.errors.blocked;
+                if (error.status === 429) return t.auth.errors.tooMany;
+                return t.auth.errors.credentials;
+              }
+            }}
+          />
+        </Suspense>
       </AuthCard>
     </main>
   );
+}
+
+// /login?email=… (რეგისტრაციის შემდეგ) — useSearchParams Suspense-ს საჭიროებს
+function PrefilledLoginForm(props: Omit<LoginFormProps, "defaultEmail">) {
+  return <LoginForm {...props} defaultEmail={useSearchParams().get("email") ?? ""} />;
 }

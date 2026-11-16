@@ -18,6 +18,6 @@ export function AuthGuard({ children }: { children: ReactNode }) {
     if (hydrated && !token) router.replace("/login");
   }, [hydrated, token, router]);
 
-  if (!hydrated || !token) return null;
+  // გვერდი ყოველთვის იხატება (Next.js-ის instant validation); token-ის გარეშე → /login
   return children;
 }

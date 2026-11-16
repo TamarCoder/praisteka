@@ -8,4 +8,6 @@ export interface LoginFormProps {
   /** „პაროლი დაგავიწყდა?“ ბმული */
   forgotHref: string;
   onBusyChange?: (busy: boolean) => void;
+  /** წინასწარ ჩაწერილი ელფოსტა (რეგისტრაციის შემდეგ) */
+  defaultEmail?: string;
 }

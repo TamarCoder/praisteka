@@ -13,11 +13,11 @@ import { createLoginSchema, type LoginValues } from "@/schemas/auth.schema";
 import styles from "../authForm.module.scss";
 import type { LoginFormProps } from "./LoginForm.types";
 
-export function LoginForm({ t, forgotHref, onSubmit, onBusyChange }: LoginFormProps) {
+export function LoginForm({ t, forgotHref, onSubmit, onBusyChange, defaultEmail = "" }: LoginFormProps) {
   const [formError, setFormError] = useState<string>();
   const { register, handleSubmit, formState } = useForm<LoginValues>({
     resolver: zodResolver(createLoginSchema(t.errors)),
-    defaultValues: { email: "", password: "" },
+    defaultValues: { email: defaultEmail, password: "" },
   });
   const { errors, isSubmitting } = formState;
 
