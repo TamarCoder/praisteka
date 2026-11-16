@@ -221,6 +221,7 @@ export default function DashboardPage() {
           placeholder={t.search}
           searchLabel={t.searchLabel}
           disabled={!sheet && !searchAll}
+          user={<UserMenu />}
           actions={
             <>
               <Button size={ButtonSize.Sm} variant={ButtonVariant.Ghost} iconOnly href="/dashboard/history" title={t.historyLink} aria-label={t.historyLink}>
@@ -254,7 +255,6 @@ export default function DashboardPage() {
               <Button size={ButtonSize.Sm} iconOnly onClick={() => setUploadOpen(true)} title={t.upload} aria-label={t.upload}>
                 {StateIcon.upload}
               </Button>
-              <UserMenu />
             </>
           }
         />

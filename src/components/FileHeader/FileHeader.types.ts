@@ -8,6 +8,8 @@ export interface FileHeaderProps {
   disabled?: boolean;
   /** ღილაკები ძებნის წინ: ისტორია, ფოლდერი, ვერსია, ატვირთვა */
   actions?: ReactNode;
+  /** ავატარი: მობილურზე ზედა ზოლში რჩება, დანარჩენი ღილაკები ☰ მენიუში გადადის */
+  user?: ReactNode;
   /** ძებნის გვერდით, მაგ. „ამ ფაილში / ყველა ფაილში“ */
   scope?: ReactNode;
 }

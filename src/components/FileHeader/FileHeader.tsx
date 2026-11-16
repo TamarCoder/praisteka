@@ -12,10 +12,12 @@ import styles from "./FileHeader.module.scss";
 import type { FileHeaderProps } from "./FileHeader.types";
 
 // მარცხნივ: ძებნა · მარჯვნივ: ღილაკები · ქვემოთ ხაზი
-export function FileHeader({ query, onQueryChange, placeholder, searchLabel, disabled, actions, scope }: FileHeaderProps) {
+export function FileHeader({ query, onQueryChange, placeholder, searchLabel, disabled, actions, user, scope }: FileHeaderProps) {
   // ტაბლეტი/მობილური: ღილაკები ზედა ზოლში, ლოგოს გვერდით
   const below = useBelowDesktop();
+  // ზედა ზოლში: 🔍 + ავატარი · ☰ მენიუში: დანარჩენი ღილაკები წარწერებით
   const slot = useElementById("app-bar-actions", below);
+  const menuSlot = useElementById("app-menu-actions", below);
   // ზედა ზოლში 🔍: დაჭერით ძებნა რბილად ჩამოიშლება; ტექსტი თუ წერია — ღიად რჩება
   const [searchOpen, setSearchOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -53,13 +55,25 @@ export function FileHeader({ query, onQueryChange, placeholder, searchLabel, dis
         />
         {scope}
       </div>
-      {actions && (slot ? createPortal(
+      {slot ? (
+        <>
+          {createPortal(
             <>
               {searchButton}
-              {actions}
+              {user}
             </>,
             slot,
-          ) : <div className={styles.actions}>{actions}</div>)}
+          )}
+          {actions && menuSlot && createPortal(actions, menuSlot)}
+        </>
+      ) : (
+        (actions || user) && (
+          <div className={styles.actions}>
+            {actions}
+            {user}
+          </div>
+        )
+      )}
     </div>
   );
 }

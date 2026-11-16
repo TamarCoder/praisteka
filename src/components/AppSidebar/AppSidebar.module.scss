@@ -53,6 +53,36 @@
   }
 }
 
+// ☰ მენიუს თავში: გვერდის ღილაკები სიად — ხატულა + წარწერა (aria-label-იდან)
+.menuActions {
+  display: none;
+
+  @include down(desktop) {
+    display: flex;
+    flex-direction: column;
+    gap: sp(1);
+    margin-bottom: sp(3);
+    padding-bottom: sp(3);
+    border-bottom: 1px solid c(line);
+
+    &:empty { display: none; }
+
+    > * {
+      width: 100%;
+      min-height: $h-touch;
+      aspect-ratio: auto;
+      justify-content: flex-start;
+      gap: sp(3);
+      padding: 0 sp(3);
+    }
+
+    > *::after {
+      content: attr(aria-label);
+      @include text(body-strong);
+    }
+  }
+}
+
 .head .burger {
   display: none;
   width: $h-touch;

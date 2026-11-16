@@ -152,6 +152,17 @@ export function AppSidebar() {
           .filter(Boolean)
           .join(" ")}
       >
+        {/* მობილური/ტაბლეტი: გვერდის ღილაკები (ისტორია, ფოლდერი, ატვირთვა…) წარწერებით; დაჭერა მენიუს ხურავს */}
+        <div
+          id="app-menu-actions"
+          className={styles.menuActions}
+          ref={(el) => {
+            if (!el) return;
+            const close = () => setMenuOpen(false);
+            el.addEventListener("click", close);
+            return () => el.removeEventListener("click", close);
+          }}
+        />
         <FileTree
           label={t.filesTitle}
           folders={tree.folders}
