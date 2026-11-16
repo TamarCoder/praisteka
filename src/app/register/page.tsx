@@ -12,9 +12,11 @@ import { LanguageSwitcher } from "@/components/ui/LanguageSwitcher/LanguageSwitc
 import { ThemeSwitcher } from "@/components/ui/ThemeSwitcher/ThemeSwitcher";
 import { useSystemTheme } from "@/hooks/useSystemTheme";
 import { dictionaries } from "@/i18n/dictionaries";
-import { demoRegister } from "@/lib/demoAuth";
+import { authApi } from "@/api/auth";
+import { reportError } from "@/api/errors";
+import { ApiError } from "@/api/fetcher";
 import { usePreferencesStore } from "@/stores/preferences.store";
-import { useUserStore } from "@/stores/user.store";
+import { ErrorAction } from "@/types/api";
 import styles from "./page.module.scss";
 
 export default function RegisterPage() {
@@ -42,7 +44,6 @@ export default function RegisterPage() {
         onModeChange={(mode) => mode === AuthMode.Login && toLogin()}
         modeLabels={t.auth.modes}
         busy={busy}
-        hint={t.auth.demoHint}
       >
         {done ? (
           <AuthSuccess title={t.auth.done.register.title} text={t.auth.done.register.text}>
@@ -55,10 +56,15 @@ export default function RegisterPage() {
             t={t.auth}
             onBusyChange={setBusy}
             onSubmit={async (values) => {
-              await demoRegister();
-              await useUserStore.persist.rehydrate();
-              useUserStore.getState().signIn(values.email, values.name.trim());
-              setDone(true);
+              const email = values.email.trim();
+              try {
+                await authApi.register({ name: values.name.trim(), email, password: values.password });
+                setDone(true);
+              } catch (error) {
+                reportError(ErrorAction.Register, error, email);
+                if (!(error instanceof ApiError)) return t.auth.errors.network;
+                return error.status === 409 ? t.auth.errors.emailTaken : t.auth.errors.network;
+              }
             }}
           />
         )}

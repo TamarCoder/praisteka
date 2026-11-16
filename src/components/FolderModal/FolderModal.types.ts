@@ -5,5 +5,5 @@ export interface FolderModalProps {
   onClose: () => void;
   t: Dictionary["dashboard"];
   /** აბრუნებს შეცდომის ტექსტს, ან undefined წარმატებისას */
-  onSubmit: (name: string) => string | undefined;
+  onSubmit: (name: string) => Promise<string | undefined>;
 }

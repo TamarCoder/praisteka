@@ -13,6 +13,7 @@ export function FolderModal({ open, onClose, t, onSubmit }: FolderModalProps) {
   const formId = useId();
   const [name, setName] = useState("");
   const [error, setError] = useState<string>();
+  const [busy, setBusy] = useState(false);
 
   const close = () => {
     setName("");
@@ -20,12 +21,17 @@ export function FolderModal({ open, onClose, t, onSubmit }: FolderModalProps) {
     onClose();
   };
 
-  const submit = (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim()) return setError(t.errors.folderName);
-    const failed = onSubmit(name);
-    if (failed) return setError(failed);
-    close();
+    setBusy(true);
+    try {
+      const failed = await onSubmit(name);
+      if (failed) return setError(failed);
+      close();
+    } finally {
+      setBusy(false);
+    }
   };
 
   return (
@@ -37,10 +43,10 @@ export function FolderModal({ open, onClose, t, onSubmit }: FolderModalProps) {
       closeLabel={t.uploadModal.close}
       footer={
         <>
-          <Button variant={ButtonVariant.Secondary} onClick={close}>
+          <Button variant={ButtonVariant.Secondary} onClick={close} disabled={busy}>
             {t.uploadModal.cancel}
           </Button>
-          <Button type="submit" form={formId}>
+          <Button type="submit" form={formId} loading={busy}>
             {t.folderModal.submit}
           </Button>
         </>

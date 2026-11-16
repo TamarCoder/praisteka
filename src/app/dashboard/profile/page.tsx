@@ -7,13 +7,15 @@ import { ButtonVariant } from "@/components/ui/Button/Button.types";
 import { Field } from "@/components/ui/Field/Field";
 import { Input } from "@/components/ui/Input/Input";
 import { Toast } from "@/components/ui/Toast/Toast";
-import { useFilesHydration } from "@/hooks/useFilesHydration";
+import { ApiError } from "@/api/fetcher";
+import { useAccountMutations } from "@/hooks/api/useAccountMutations";
+import { useAllSnapshots } from "@/hooks/api/useAllSnapshots";
+import { useFiles } from "@/hooks/api/useFiles";
+import { useMe } from "@/hooks/api/useMe";
 import { dictionaries } from "@/i18n/dictionaries";
 import { formatDate, formatDateTime } from "@/lib/formatDate";
 import { EMAIL_PATTERN } from "@/schemas/auth.schema";
-import { useFilesStore } from "@/stores/files.store";
 import { usePreferencesStore } from "@/stores/preferences.store";
-import { useUserStore } from "@/stores/user.store";
 import styles from "./page.module.scss";
 
 const RECENT = 5;
@@ -21,14 +23,19 @@ const RECENT = 5;
 export default function ProfilePage() {
   const locale = usePreferencesStore((s) => s.locale);
   const { user: t } = dictionaries[locale];
-  const ready = useFilesHydration();
-  const { user, update } = useUserStore();
-  const { versions, snapshots } = useFilesStore();
+  const { data: user } = useMe();
+  const { data: versions } = useFiles();
+  const { data: rawSnapshots } = useAllSnapshots(versions);
+  const { updateProfile } = useAccountMutations();
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string>();
   // null — ველებში რეგისტრაციისას შევსებული მონაცემია
   const [draft, setDraft] = useState<{ name: string; email: string } | null>(null);
   const [toast, setToast] = useState<string | null>(null);
 
-  if (!ready || !user) return <main className={styles.card} aria-hidden />;
+  if (!user || !versions || !rawSnapshots) return <main className={styles.card} aria-hidden />;
+
+  const snapshots = rawSnapshots.map((s) => ({ ...s, savedAt: Date.parse(s.savedAt) }));
 
   const form = draft ?? { name: user.name, email: user.email };
   const nameOk = form.name.trim().length >= 3;
@@ -38,10 +45,18 @@ export default function ProfilePage() {
   const saved = [...snapshots].sort((a, b) => b.savedAt - a.savedAt).slice(0, RECENT);
   const fileName = (id: string) => versions.find((v) => v.id === id)?.fileName ?? "—";
 
-  const save = () => {
-    update({ name: form.name.trim(), email: form.email });
-    setDraft(null);
-    setToast(t.saved);
+  const save = async () => {
+    setSaving(true);
+    setSaveError(undefined);
+    try {
+      await updateProfile({ name: form.name.trim(), email: form.email.trim() });
+      setDraft(null);
+      setToast(t.saved);
+    } catch (error) {
+      setSaveError(error instanceof ApiError && error.status === 409 ? t.emailTaken : t.saveFailed);
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -59,7 +74,7 @@ export default function ProfilePage() {
           <div className={styles.who}>
             <p className={styles.name}>{user.name}</p>
             <p className={styles.muted}>{user.email}</p>
-            <p className={styles.muted}>{t.since}: {formatDateTime(user.createdAt)}</p>
+            <p className={styles.muted}>{t.since}: {formatDateTime(Date.parse(user.createdAt))}</p>
           </div>
         </section>
 
@@ -69,11 +84,14 @@ export default function ProfilePage() {
             <Field label={t.name}>
               <Input value={form.name} onChange={(e) => setDraft({ ...form, name: e.target.value })} invalid={!nameOk} autoComplete="name" />
             </Field>
-            <Field label={t.email}>
-              <Input type="email" value={form.email} onChange={(e) => setDraft({ ...form, email: e.target.value })} invalid={!emailOk} autoComplete="email" />
+            <Field label={t.email} error={saveError}>
+              <Input type="email" value={form.email} onChange={(e) => {
+                setDraft({ ...form, email: e.target.value });
+                setSaveError(undefined);
+              }} invalid={!emailOk || !!saveError} autoComplete="email" />
             </Field>
           </div>
-          <Button className={styles.save} onClick={save} disabled={!changed || !nameOk || !emailOk}>{t.save}</Button>
+          <Button className={styles.save} onClick={save} loading={saving} disabled={!changed || !nameOk || !emailOk}>{t.save}</Button>
         </section>
 
         <section className={styles.section}>

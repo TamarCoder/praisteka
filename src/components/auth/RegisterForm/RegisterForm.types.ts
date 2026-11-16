@@ -3,6 +3,7 @@ import type { RegisterValues } from "@/schemas/auth.schema";
 
 export interface RegisterFormProps {
   t: Dictionary["auth"];
-  onSubmit: (values: RegisterValues) => Promise<void>;
+  /** აბრუნებს შეცდომის ტექსტს, ან undefined წარმატებისას */
+  onSubmit: (values: RegisterValues) => Promise<string | undefined>;
   onBusyChange?: (busy: boolean) => void;
 }

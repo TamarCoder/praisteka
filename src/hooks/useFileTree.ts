@@ -2,17 +2,16 @@
 
 import type { TreeFile, TreeFolder } from "@/components/FileTree/FileTree.types";
 import { formatDate } from "@/lib/formatDate";
-import { useFilesStore, type FileVersion } from "@/stores/files.store";
+import type { Company, FileSummary, Folder } from "@/types/api";
 
 /** ზოლის ხე: ფოლდერები და ფოლდერის გარეშე ფაილები, ახლიდან ძველისკენ */
-export function useFileTree(): { folders: TreeFolder[]; files: TreeFile[]; firstId?: string } {
-  const { companies, versions, folders } = useFilesStore();
-  const sorted = [...versions].sort((a, b) => b.effectiveFrom.localeCompare(a.effectiveFrom));
+export function useFileTree(files: FileSummary[], folders: Folder[], companies: Company[]): { folders: TreeFolder[]; files: TreeFile[]; firstId?: string } {
+  const sorted = [...files].sort((a, b) => b.effectiveFrom.localeCompare(a.effectiveFrom));
 
-  const toFile = (v: FileVersion): TreeFile => ({
-    id: v.id,
-    name: v.fileName,
-    meta: `${companies.find((c) => c.id === v.companyId)?.name ?? ""} · ${formatDate(v.effectiveFrom)}`,
+  const toFile = (f: FileSummary): TreeFile => ({
+    id: f.id,
+    name: f.fileName,
+    meta: `${companies.find((c) => c.id === f.companyId)?.name ?? ""} · ${formatDate(f.effectiveFrom)}`,
   });
 
   return {

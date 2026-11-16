@@ -1,7 +1,8 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useState, type ReactNode } from "react";
+import { useState, type ReactNode } from "react";
+import { ApiError } from "@/api/fetcher";
 import { Button } from "@/components/ui/Button/Button";
 import { ButtonSize, ButtonVariant } from "@/components/ui/Button/Button.types";
 import { Field } from "@/components/ui/Field/Field";
@@ -11,13 +12,11 @@ import { SegmentedControl } from "@/components/ui/SegmentedControl/SegmentedCont
 import { SegmentedSize } from "@/components/ui/SegmentedControl/SegmentedControl.types";
 import { ThemeSwitcher } from "@/components/ui/ThemeSwitcher/ThemeSwitcher";
 import { Toast } from "@/components/ui/Toast/Toast";
-import { useFilesHydration } from "@/hooks/useFilesHydration";
+import { useAccountMutations } from "@/hooks/api/useAccountMutations";
+import { useFileMutations } from "@/hooks/api/useFileMutations";
 import { useSystemTheme } from "@/hooks/useSystemTheme";
 import { dictionaries } from "@/i18n/dictionaries";
-import { clearAllSheets } from "@/lib/demoFiles";
-import { useFilesStore } from "@/stores/files.store";
 import { usePreferencesStore } from "@/stores/preferences.store";
-import { useUserStore } from "@/stores/user.store";
 import styles from "./page.module.scss";
 
 enum Confirm {
@@ -27,57 +26,61 @@ enum Confirm {
 
 const MIN_PASSWORD = 8;
 
-/** ბაიტები → „1.2 MB“ */
-const formatBytes = (n: number) => (n < 1024 * 1024 ? `${Math.max(1, Math.round(n / 1024))} KB` : `${(n / 1024 / 1024).toFixed(1)} MB`);
-
-// პარამეტრები: გარეგნობა, უსაფრთხოება, მონაცემები, ანგარიში (ბექენდამდე — ბრაუზერში)
+// პარამეტრები: გარეგნობა, უსაფრთხოება, მონაცემები, ანგარიში
 export default function SettingsPage() {
-  const ready = useFilesHydration();
   const [toast, setToast] = useState<string | null>(null);
   const onNotice = setToast;
   const router = useRouter();
   const { locale, theme, setLocale, setTheme, sidebarCollapsed, toggleSidebar } = usePreferencesStore();
   const systemTheme = useSystemTheme();
   const { user: t, prefs, auth } = dictionaries[locale];
-  const clearAll = useFilesStore((s) => s.clearAll);
-  const signOut = useUserStore((s) => s.signOut);
+  const { changePassword: savePassword, deleteAccount: removeAccount } = useAccountMutations();
+  const { deleteAll } = useFileMutations();
+  const [busy, setBusy] = useState(false);
+  const [passwordError, setPasswordError] = useState<string>();
   const [current, setCurrent] = useState("");
   const [next, setNext] = useState("");
   const [next2, setNext2] = useState("");
   const [confirm, setConfirm] = useState<Confirm | null>(null);
-  const [usage, setUsage] = useState<number | null>(null);
-
-  useEffect(() => {
-    navigator.storage?.estimate?.().then((e) => setUsage(e.usage ?? null)).catch(() => setUsage(null));
-  }, []);
 
   const nextError = next && next.length < MIN_PASSWORD ? t.passwordShort : undefined;
   const next2Error = next2 && next2 !== next ? t.passwordMismatch : undefined;
   const canChange = current.length >= MIN_PASSWORD && next.length >= MIN_PASSWORD && next === next2;
 
-  const changePassword = () => {
-    setCurrent("");
-    setNext("");
-    setNext2("");
-    onNotice(t.passwordChanged);
+  const changePassword = async () => {
+    setBusy(true);
+    setPasswordError(undefined);
+    try {
+      await savePassword({ currentPassword: current, newPassword: next });
+      setCurrent("");
+      setNext("");
+      setNext2("");
+      onNotice(t.passwordChanged);
+    } catch (error) {
+      setPasswordError(error instanceof ApiError && error.status === 400 ? t.wrongPassword : t.saveFailed);
+    } finally {
+      setBusy(false);
+    }
   };
 
-  const wipe = async () => {
-    await clearAllSheets();
-    clearAll();
-  };
-
+  // ფაილები, ფოლდერები, კომპანიები და ვერსიები — სერვერზე
   const deleteData = async () => {
-    await wipe();
-    setConfirm(null);
-    setUsage(null);
-    onNotice(t.dataCleared);
+    try {
+      await deleteAll();
+      setConfirm(null);
+      onNotice(t.dataCleared);
+    } catch {
+      onNotice(t.saveFailed);
+    }
   };
 
   const deleteAccount = async () => {
-    await wipe();
-    signOut();
-    router.push("/login");
+    try {
+      await removeAccount();
+      router.push("/login");
+    } catch {
+      onNotice(t.saveFailed);
+    }
   };
 
   const danger = (kind: Confirm, title: string, hint: string, action: () => void) => (
@@ -96,8 +99,6 @@ export default function SettingsPage() {
       )}
     </div>
   );
-
-  if (!ready) return <main className={styles.card} aria-hidden />;
 
   // ერთი სექცია: მარცხნივ სათაური + აღწერა, მარჯვნივ ბარათი
   const section = (title: string, hint: string, body: ReactNode, dangerZone = false) => (
@@ -152,8 +153,11 @@ export default function SettingsPage() {
           t.security,
           t.passwordHint,
           <div className={styles.form}>
-            <Field label={t.currentPassword}>
-              <PasswordInput value={current} onChange={(e) => setCurrent(e.target.value)} labels={auth.passwordToggle} autoComplete="current-password" />
+            <Field label={t.currentPassword} error={passwordError}>
+              <PasswordInput value={current} onChange={(e) => {
+                setCurrent(e.target.value);
+                setPasswordError(undefined);
+              }} invalid={!!passwordError} labels={auth.passwordToggle} autoComplete="current-password" />
             </Field>
             <div className={styles.pair}>
               <Field label={t.newPassword} error={nextError}>
@@ -163,20 +167,14 @@ export default function SettingsPage() {
                 <PasswordInput value={next2} onChange={(e) => setNext2(e.target.value)} invalid={!!next2Error} labels={auth.passwordToggle} autoComplete="new-password" />
               </Field>
             </div>
-            <Button size={ButtonSize.Sm} className={styles.end} onClick={changePassword} disabled={!canChange}>{t.changePassword}</Button>
+            <Button size={ButtonSize.Sm} className={styles.end} onClick={changePassword} loading={busy} disabled={!canChange}>{t.changePassword}</Button>
           </div>,
         )}
 
         {section(
           t.data,
           t.dataHint,
-          <>
-            <div className={styles.row}>
-              <span className={styles.name}>{t.storageUsed}</span>
-              <span className={styles.usage}>{usage === null ? "—" : formatBytes(usage)}</span>
-            </div>
-            {danger(Confirm.Data, t.clearData, t.clearDataHint, deleteData)}
-          </>,
+          danger(Confirm.Data, t.clearData, t.clearDataHint, deleteData),
         )}
 
         {section(t.account, t.accountHint, danger(Confirm.Account, t.deleteAccount, t.deleteAccountHint, deleteAccount), true)}

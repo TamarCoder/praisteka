@@ -21,18 +21,23 @@ import { EmptyState } from "@/components/ui/EmptyState/EmptyState";
 import { StateIcon } from "@/components/StateIcons/StateIcons";
 import { Skeleton } from "@/components/ui/Skeleton/Skeleton";
 import { Toast } from "@/components/ui/Toast/Toast";
-import { useAllSheets } from "@/hooks/useAllSheets";
-import { useFilesHydration } from "@/hooks/useFilesHydration";
+import { reportError } from "@/api/errors";
+import { useAllFileSheets } from "@/hooks/api/useAllFileSheets";
+import { useCompanies } from "@/hooks/api/useCompanies";
+import { useFileMutations } from "@/hooks/api/useFileMutations";
+import { useFiles } from "@/hooks/api/useFiles";
+import { useFileSheets } from "@/hooks/api/useFileSheets";
+import { useFolderMutations } from "@/hooks/api/useFolderMutations";
+import { useFolders } from "@/hooks/api/useFolders";
+import { useSnapshotMutations } from "@/hooks/api/useSnapshotMutations";
 import { useSheetView } from "@/hooks/useSheetView";
-import { useVersionSheets } from "@/hooks/useVersionSheets";
 import { dictionaries } from "@/i18n/dictionaries";
 import { fill } from "@/i18n/fill";
-import { saveSheets, saveSnapshot } from "@/lib/demoFiles";
 import { exportCsv } from "@/lib/exportCsv";
 import { MIN_QUERY, searchFiles, type SearchGroup } from "@/lib/searchFiles";
 import { formatDate } from "@/lib/formatDate";
 import { readWorkbook } from "@/lib/readWorkbook";
-import { useFilesStore } from "@/stores/files.store";
+import { ErrorAction } from "@/types/api";
 import { usePreferencesStore } from "@/stores/preferences.store";
 import styles from "./page.module.scss";
 
@@ -43,8 +48,13 @@ export default function DashboardPage() {
   // ღია ფაილი ბმულშია (?file=) — ზოლიდან არჩევა, გაზიარება, refresh
   const fileParam = useSearchParams().get("file");
 
-  const ready = useFilesHydration();
-  const { companies, versions, folders, addVersion, addFolder, addSnapshot } = useFilesStore();
+  const { data: versions } = useFiles();
+  const { data: folders } = useFolders();
+  const { data: companies } = useCompanies();
+  const ready = !!versions && !!folders && !!companies;
+  const { uploadFile } = useFileMutations();
+  const { createFolder: addFolder } = useFolderMutations();
+  const { saveSnapshot } = useSnapshotMutations();
   /** ფურცელი იმ ფაილისთვის, რომელიც ბოლოს გაიხსნა; სხვა ფაილზე — 0 */
   const [sheetPick, setSheetPick] = useState({ file: "", index: 0 });
   const [uploadOpen, setUploadOpen] = useState(false);
@@ -53,10 +63,10 @@ export default function DashboardPage() {
   const [toast, setToast] = useState<string | null>(null);
 
   // ახლიდან ძველისკენ
-  const sorted = [...versions].sort((a, b) => b.effectiveFrom.localeCompare(a.effectiveFrom));
+  const sorted = [...(versions ?? [])].sort((a, b) => b.effectiveFrom.localeCompare(a.effectiveFrom));
   const version = sorted.find((v) => v.id === fileParam) ?? sorted[0];
-  const company = companies.find((c) => c.id === version?.companyId);
-  const { sheets, loading, update } = useVersionSheets(version?.id);
+  const company = companies?.find((c) => c.id === version?.companyId);
+  const { sheets, loading, update, flush } = useFileSheets(version?.id);
   const sheetIndex = sheetPick.file === version?.id ? sheetPick.index : 0;
   const activeSheet = sheets?.[sheetIndex] ? sheetIndex : 0;
   const setSheetIndex = (index: number) => setSheetPick({ file: version?.id ?? "", index });
@@ -82,7 +92,7 @@ export default function DashboardPage() {
   }
 
   const view = useSheetView(sheet, locale, `${version?.id}:${activeSheet}`, seedQuery);
-  const all = useAllSheets(versions, searchAll, version && sheets ? { id: version.id, sheets } : undefined);
+  const all = useAllFileSheets(versions ?? [], searchAll, version && sheets ? { id: version.id, sheets } : undefined);
   const groups = searchAll ? searchFiles(all.sources, globalQuery) : [];
 
   const togglePick = (key: string) => setPicked((p) => (p.includes(key) ? p.filter((k) => k !== key) : [...p, key]));
@@ -130,39 +140,49 @@ export default function DashboardPage() {
   const selectVersion = (id: string) => router.push(`/dashboard?file=${id}`);
 
   const upload = async ({ company: name, effectiveFrom, folder, file }: UploadSubmit) => {
-    const existing = companies.find((c) => c.name.toLowerCase() === name.trim().toLowerCase());
-    if (existing && versions.some((v) => v.companyId === existing.id && v.effectiveFrom === effectiveFrom)) {
+    const existing = companies?.find((c) => c.name.toLowerCase() === name.trim().toLowerCase());
+    if (existing && versions?.some((v) => v.companyId === existing.id && v.effectiveFrom === effectiveFrom)) {
       return t.errors.duplicate;
     }
+    let sheets;
     try {
-      const data = await readWorkbook(file);
-      const created = addVersion({ companyName: name, fileName: file.name, effectiveFrom, folderId: folder || undefined });
-      await saveSheets(created.id, data);
-      // ატვირთვა = ვერსია 1
-      const first = addSnapshot(created.id, t.uploadNote);
-      await saveSnapshot(first.id, data);
+      sheets = await readWorkbook(file);
+    } catch (error) {
+      reportError(ErrorAction.Upload, error);
+      return t.errors.read;
+    }
+    try {
+      // ატვირთვა = ფაილი + ვერსია 1
+      const created = await uploadFile({ companyName: name.trim(), fileName: file.name, effectiveFrom, folderId: folder || undefined, sheets }, t.uploadNote);
       selectVersion(created.id);
       setToast(fill(t.uploaded, { company: name.trim(), date: formatDate(effectiveFrom) }));
-    } catch {
-      return t.errors.read;
+    } catch (error) {
+      reportError(ErrorAction.Upload, error);
+      return t.errors.upload;
     }
   };
 
   const saveVersion = async (note: string) => {
     if (!version || !sheets) return;
-    const snapshot = addSnapshot(version.id, note);
     try {
-      await saveSnapshot(snapshot.id, sheets);
+      // backend-ი ფაილის ახლანდელ შიგთავსს აკოპირებს — ჯერ დაუსეივებელი ცვლილება
+      await flush();
+      const snapshot = await saveSnapshot(version.id, note);
       setToast(fill(t.versionSaved, { n: snapshot.n }));
     } catch {
       setToast(t.errors.save);
     }
   };
 
-  const createFolder = (name: string) => {
-    if (folders.some((f) => f.name.toLowerCase() === name.trim().toLowerCase())) return t.errors.folderDuplicate;
-    addFolder(name);
-    setToast(fill(t.folderCreated, { name: name.trim() }));
+  const createFolder = async (name: string) => {
+    if (folders?.some((f) => f.name.toLowerCase() === name.trim().toLowerCase())) return t.errors.folderDuplicate;
+    try {
+      await addFolder(name.trim());
+      setToast(fill(t.folderCreated, { name: name.trim() }));
+    } catch (error) {
+      reportError(ErrorAction.CreateFolder, error);
+      return t.errors.folderSave;
+    }
   };
 
   const download = () => {
@@ -173,6 +193,7 @@ export default function DashboardPage() {
 
   // სანამ შენახული მონაცემები არ წაიკითხება — ცარიელი ბარათის ჩარჩო (ციმციმის გარეშე)
   if (!ready) return <main className={styles.card} aria-hidden />;
+  const fileCount = versions.length;
 
   return (
     <main className={styles.card}>
@@ -183,7 +204,7 @@ export default function DashboardPage() {
           query={searchAll ? globalQuery : view.query}
           onQueryChange={searchAll ? setGlobalQuery : view.setQuery}
           scope={
-            versions.length > 1 ? (
+            fileCount > 1 ? (
               <SegmentedControl
                 size={SegmentedSize.Sm}
                 label={t.scope.label}

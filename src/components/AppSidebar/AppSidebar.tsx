@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/Button/Button";
 import { ButtonSize, ButtonVariant } from "@/components/ui/Button/Button.types";
 import { DeleteModal } from "@/components/DeleteModal/DeleteModal";
@@ -11,14 +11,14 @@ import { LogoSize } from "@/components/ui/Logo/Logo.types";
 import { ThemeSwitcher } from "@/components/ui/ThemeSwitcher/ThemeSwitcher";
 import { Toast } from "@/components/ui/Toast/Toast";
 import { useFileTree } from "@/hooks/useFileTree";
-import { useFilesHydration } from "@/hooks/useFilesHydration";
+import { useCompanies } from "@/hooks/api/useCompanies";
+import { useFileMutations } from "@/hooks/api/useFileMutations";
+import { useFiles } from "@/hooks/api/useFiles";
+import { useFolders } from "@/hooks/api/useFolders";
 import { useSystemTheme } from "@/hooks/useSystemTheme";
 import { dictionaries } from "@/i18n/dictionaries";
 import { fill } from "@/i18n/fill";
-import { deleteSheets, deleteSnapshot } from "@/lib/demoFiles";
-import { useFilesStore } from "@/stores/files.store";
 import { usePreferencesStore } from "@/stores/preferences.store";
-import { useUserStore } from "@/stores/user.store";
 import { FileTree } from "../FileTree/FileTree";
 import styles from "./AppSidebar.module.scss";
 
@@ -27,9 +27,11 @@ export function AppSidebar() {
   const router = useRouter();
   const pathname = usePathname();
   const params = useSearchParams();
-  const ready = useFilesHydration();
-  const tree = useFileTree();
-  const { versions, snapshots, removeVersion } = useFilesStore();
+  const { data: files } = useFiles();
+  const { data: folders } = useFolders();
+  const { data: companies } = useCompanies();
+  const { deleteFile } = useFileMutations();
+  const tree = useFileTree(files ?? [], folders ?? [], companies ?? []);
   const { locale, theme, setLocale, setTheme, sidebarCollapsed: collapsed, toggleSidebar } = usePreferencesStore();
   const systemTheme = useSystemTheme();
   const { prefs, nav, dashboard: t } = dictionaries[locale];
@@ -37,15 +39,9 @@ export function AppSidebar() {
   const [toast, setToast] = useState<string | null>(null);
   // ტაბლეტი/მობილური: ☰ მენიუ, როგორც ლენდინგზე (LandingTopBar)
   const [menuOpen, setMenuOpen] = useState(false);
-  const user = useUserStore((s) => s.user);
-
-  // შესვლის გარეშე აპი არ იხსნება — შესვლის გვერდზე
-  useEffect(() => {
-    if (ready && !user) router.replace("/login");
-  }, [ready, user, router]);
 
   // ჩატვირთვისას — იგივე სიგანის ჩარჩო ლოგოთი (სიგანე <html data-sidebar>-იდან), რომ ბარათი არ გადახტეს
-  if (!ready || !user)
+  if (!files || !folders || !companies)
     return (
       <aside className={`${styles.sidebar} ${styles.placeholder}`} aria-hidden>
         <Logo size={LogoSize.Md} className={styles.logo} />
@@ -55,13 +51,16 @@ export function AppSidebar() {
   const fileParam = params.get("file");
   const activeId = pathname === "/dashboard" ? (fileParam ?? tree.firstId) : undefined;
   const label = collapsed ? prefs.expand : prefs.collapse;
-  const toDelete = versions.find((v) => v.id === deleteId);
+  const toDelete = files.find((f) => f.id === deleteId);
 
   const removeFile = async () => {
     if (!toDelete) return;
-    await deleteSheets(toDelete.id);
-    await Promise.all(snapshots.filter((s) => s.fileId === toDelete.id).map((s) => deleteSnapshot(s.id)));
-    removeVersion(toDelete.id);
+    try {
+      await deleteFile(toDelete.id);
+    } catch {
+      setToast(t.errors.save);
+      return;
+    }
     if (fileParam === toDelete.id) router.replace("/dashboard");
     setDeleteId(null);
     setToast(fill(t.deleted, { name: toDelete.fileName }));

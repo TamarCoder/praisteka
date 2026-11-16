@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { reportError } from "@/api/errors";
 import { ChangeReport } from "@/components/ChangeReport/ChangeReport";
 import { StateIcon } from "@/components/StateIcons/StateIcons";
 import { SnapshotList } from "@/components/SnapshotList/SnapshotList";
@@ -13,22 +14,27 @@ import { Dropdown } from "@/components/ui/Dropdown/Dropdown";
 import { SheetGrid } from "@/components/ui/SheetGrid/SheetGrid";
 import { Skeleton } from "@/components/ui/Skeleton/Skeleton";
 import { Toast } from "@/components/ui/Toast/Toast";
-import { useFilesHydration } from "@/hooks/useFilesHydration";
+import { useAllSnapshots } from "@/hooks/api/useAllSnapshots";
+import { useFiles } from "@/hooks/api/useFiles";
+import { useSnapshotDiff } from "@/hooks/api/useSnapshotDiff";
+import { useSnapshotMutations } from "@/hooks/api/useSnapshotMutations";
 import { useSheetView } from "@/hooks/useSheetView";
-import { useSnapshotDiff } from "@/hooks/useSnapshotDiff";
 import { dictionaries } from "@/i18n/dictionaries";
 import { fill } from "@/i18n/fill";
-import { saveSheets, saveSnapshot } from "@/lib/demoFiles";
 import { formatDateTime, localDay } from "@/lib/formatDate";
-import { useFilesStore } from "@/stores/files.store";
+import { ErrorAction } from "@/types/api";
 import { usePreferencesStore } from "@/stores/preferences.store";
 import styles from "./page.module.scss";
 
 export default function HistoryPage() {
   const { locale } = usePreferencesStore();
   const { history: t, dashboard: d } = dictionaries[locale];
-  const ready = useFilesHydration();
-  const { versions, snapshots, addSnapshot } = useFilesStore();
+  const { data: versions = [], isLoading: filesLoading } = useFiles();
+  const { data: rawSnapshots, error: snapshotsError } = useAllSnapshots(filesLoading ? undefined : versions);
+  const { restoreSnapshot } = useSnapshotMutations();
+  // savedAt: ISO → ms (ფილტრი და ფორმატი ms-ს იღებს)
+  const snapshots = (rawSnapshots ?? []).map((s) => ({ ...s, savedAt: Date.parse(s.savedAt) }));
+  const ready = !!rawSnapshots || !!snapshotsError;
 
   const [fileId, setFileId] = useState("");
   const [from, setFrom] = useState("");
@@ -51,7 +57,15 @@ export default function HistoryPage() {
   const previous = active
     ? snapshots.filter((s) => s.fileId === active.fileId && s.n < active.n).sort((a, b) => b.n - a.n)[0]
     : undefined;
-  const loaded = useSnapshotDiff(active?.id, previous?.id);
+  const diff = useSnapshotDiff(rawSnapshots?.find((s) => s.id === active?.id), rawSnapshots?.find((s) => s.id === previous?.id));
+  const loaded = diff.error ? { sheets: [], diff: null, error: true } : diff.data ? { ...diff.data, error: false } : undefined;
+
+  useEffect(() => {
+    if (diff.error) reportError(ErrorAction.ViewHistory, diff.error);
+  }, [diff.error]);
+  useEffect(() => {
+    if (snapshotsError) reportError(ErrorAction.ViewHistory, snapshotsError);
+  }, [snapshotsError]);
   const sheet = loaded?.sheets[sheetIndex] ?? loaded?.sheets[0];
   const view = useSheetView(sheet, locale, `${active?.id}:${sheetIndex}`);
 
@@ -93,9 +107,7 @@ export default function HistoryPage() {
   const restore = async () => {
     if (!active || !loaded) return;
     try {
-      await saveSheets(active.fileId, loaded.sheets);
-      const snapshot = addSnapshot(active.fileId, fill(t.restoreNote, { n: active.n }));
-      await saveSnapshot(snapshot.id, loaded.sheets);
+      await restoreSnapshot(active.fileId, loaded.sheets, fill(t.restoreNote, { n: active.n }));
       setToast(fill(t.restored, { n: active.n }));
     } catch {
       setToast(d.errors.save);
@@ -132,7 +144,9 @@ export default function HistoryPage() {
         </div>
       </header>
 
-      {!all.length ? (
+      {snapshotsError ? (
+        <EmptyState variant={EmptyStateVariant.Error} icon={StateIcon.error} title={t.loadError.title} text={t.loadError.text} className={styles.state} />
+      ) : !all.length ? (
         noVersions
       ) : (
       <div className={styles.body}>
