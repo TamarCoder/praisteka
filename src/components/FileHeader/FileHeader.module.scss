@@ -1,7 +1,5 @@
 @use 'tokens/colors' as *;
-@use 'tokens/typography' as *;
 @use 'tokens/spacing' as *;
-@use 'tokens/mixins' as *;
 @use 'tokens/breakpoints' as *;
 
 .header {
@@ -38,26 +36,6 @@
     align-items: stretch;
     gap: sp(3);
   }
-}
-
-.text {
-  min-width: 0;
-  max-width: 40%;
-
-  @include down(tablet) { max-width: none; }
-}
-
-.title {
-  margin: 0;
-  @include text(subtitle);
-  @include truncate;
-}
-
-.subtitle {
-  margin: 2px 0 0;
-  color: c(mute);
-  @include text(meta);
-  @include truncate;
 }
 
 .search {

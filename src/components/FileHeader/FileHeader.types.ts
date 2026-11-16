@@ -1,8 +1,6 @@
 import type { ReactNode } from "react";
 
 export interface FileHeaderProps {
-  title: string;
-  subtitle: string;
   query: string;
   onQueryChange: (value: string) => void;
   placeholder: string;

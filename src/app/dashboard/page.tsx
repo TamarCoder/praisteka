@@ -199,8 +199,6 @@ export default function DashboardPage() {
     <main className={styles.card}>
       <section className={styles.file}>
         <FileHeader
-          title={sheet?.name ?? version?.fileName ?? ""}
-          subtitle={version ? `${version.fileName} · ${formatDate(version.effectiveFrom)}` : ""}
           query={searchAll ? globalQuery : view.query}
           onQueryChange={searchAll ? setGlobalQuery : view.setQuery}
           scope={
