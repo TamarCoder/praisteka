@@ -15,8 +15,7 @@ import type { UploadSubmit } from "@/components/UploadModal/UploadModal.types";
 import { SheetGrid } from "@/components/ui/SheetGrid/SheetGrid";
 import { Button } from "@/components/ui/Button/Button";
 import { ButtonSize, ButtonVariant } from "@/components/ui/Button/Button.types";
-import { SegmentedControl } from "@/components/ui/SegmentedControl/SegmentedControl";
-import { SegmentedSize } from "@/components/ui/SegmentedControl/SegmentedControl.types";
+import { Checkbox } from "@/components/ui/Checkbox/Checkbox";
 import { EmptyState } from "@/components/ui/EmptyState/EmptyState";
 import { StateIcon } from "@/components/StateIcons/StateIcons";
 import { Skeleton } from "@/components/ui/Skeleton/Skeleton";
@@ -94,6 +93,8 @@ export default function DashboardPage() {
   const view = useSheetView(sheet, locale, `${version?.id}:${activeSheet}`, seedQuery);
   const all = useAllFileSheets(versions ?? [], searchAll, version && sheets ? { id: version.id, sheets } : undefined);
   const groups = searchAll ? searchFiles(all.sources, globalQuery) : [];
+  // ფაილები, სადაც ჩაწერილი ტექსტი არ მოიძებნა — წითლად
+  const missing = groups.length ? all.sources.filter((s) => !groups.some((g) => g.fileId === s.fileId)) : [];
 
   const togglePick = (key: string) => setPicked((p) => (p.includes(key) ? p.filter((k) => k !== key) : [...p, key]));
 
@@ -203,18 +204,13 @@ export default function DashboardPage() {
           onQueryChange={searchAll ? setGlobalQuery : view.setQuery}
           scope={
             fileCount > 1 ? (
-              <SegmentedControl
-                size={SegmentedSize.Sm}
-                label={t.scope.label}
-                value={scope}
-                onChange={(v) => {
-                  if (v === "all") setGlobalQuery(view.query);
-                  setScope(v);
+              <Checkbox
+                label={t.scope.all}
+                checked={searchAll}
+                onChange={(e) => {
+                  if (e.target.checked) setGlobalQuery(view.query);
+                  setScope(e.target.checked ? "all" : "file");
                 }}
-                items={[
-                  { value: "file", label: t.scope.file },
-                  { value: "all", label: t.scope.all },
-                ]}
               />
             ) : null
           }
@@ -223,28 +219,37 @@ export default function DashboardPage() {
           disabled={!sheet && !searchAll}
           actions={
             <>
-              <Button size={ButtonSize.Sm} variant={ButtonVariant.Ghost} href="/dashboard/history">
-                {t.historyLink}
+              <Button size={ButtonSize.Sm} variant={ButtonVariant.Ghost} iconOnly href="/dashboard/history" title={t.historyLink} aria-label={t.historyLink}>
+                {StateIcon.history}
               </Button>
-              <Button size={ButtonSize.Sm} variant={ButtonVariant.Secondary} onClick={() => setFolderOpen(true)}>
-                {t.newFolder}
+              <Button size={ButtonSize.Sm} variant={ButtonVariant.Secondary} iconOnly onClick={() => setFolderOpen(true)} title={t.newFolder} aria-label={t.newFolder}>
+                {StateIcon.folderPlus}
               </Button>
               {searchAll && picked.length > 0 && (
                 <>
-                  <Button size={ButtonSize.Sm} variant={ButtonVariant.Ghost} onClick={() => setPicked([])}>
-                    {t.globalSearch.clear}
+                  <Button size={ButtonSize.Sm} variant={ButtonVariant.Ghost} iconOnly onClick={() => setPicked([])} title={t.globalSearch.clear} aria-label={t.globalSearch.clear}>
+                    {StateIcon.clear}
                   </Button>
-                  <Button size={ButtonSize.Sm} onClick={() => setCompareOpen(true)} disabled={compareItems.length < 1}>
-                    {fill(t.globalSearch.compare, { n: compareItems.length })}
+                  <Button
+                    size={ButtonSize.Sm}
+                    onClick={() => setCompareOpen(true)}
+                    disabled={compareItems.length < 1}
+                    title={fill(t.globalSearch.compare, { n: compareItems.length })}
+                    aria-label={fill(t.globalSearch.compare, { n: compareItems.length })}
+                  >
+                    {StateIcon.compare}
+                    {compareItems.length}
                   </Button>
                 </>
               )}
               {!searchAll && sheets?.length ? (
-                <Button size={ButtonSize.Sm} variant={ButtonVariant.Secondary} onClick={() => setSaveOpen(true)}>
-                  {t.saveVersion}
+                <Button size={ButtonSize.Sm} variant={ButtonVariant.Secondary} iconOnly onClick={() => setSaveOpen(true)} title={t.saveVersion} aria-label={t.saveVersion}>
+                  {StateIcon.save}
                 </Button>
               ) : null}
-              <Button size={ButtonSize.Sm} onClick={() => setUploadOpen(true)}>{t.upload}</Button>
+              <Button size={ButtonSize.Sm} iconOnly onClick={() => setUploadOpen(true)} title={t.upload} aria-label={t.upload}>
+                {StateIcon.upload}
+              </Button>
               <UserMenu />
             </>
           }
@@ -255,7 +260,7 @@ export default function DashboardPage() {
           ) : all.loading ? (
             <Skeleton className={styles.loading} />
           ) : groups.length ? (
-            <SearchResults groups={groups} picked={picked} onTogglePick={togglePick} onOpen={openResult} t={t.globalSearch} />
+            <SearchResults groups={groups} query={globalQuery} missing={missing} picked={picked} onTogglePick={togglePick} onOpen={openResult} t={t.globalSearch} />
           ) : (
             <EmptyState icon={StateIcon.filter} title={t.globalSearch.none.title} text={t.globalSearch.none.text} className={styles.state} />
           )

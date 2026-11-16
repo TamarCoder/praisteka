@@ -34,6 +34,8 @@ export interface ButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement
   fullWidth?: boolean;
   /** თუ არის, ღილაკი ბმულად (next/link) რენდერდება */
   href?: string;
+  /** კვადრატული ღილაკი მხოლოდ ხატულით; სახელი — title/aria-label */
+  iconOnly?: boolean;
   /** მონიშნული ნავიგაციის პუნქტი (aria-current="page") */
   active?: boolean;
   children: ReactNode;

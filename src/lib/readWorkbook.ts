@@ -23,6 +23,7 @@ const toPx = (c?: ColInfo) => {
 };
 
 const toCell = (v: unknown): CellValue => (typeof v === "number" ? v : String(v ?? ""));
+const isFilled = (v: CellValue | undefined) => v !== undefined && String(v).trim() !== "";
 
 export async function readWorkbook(file: File): Promise<SheetData[]> {
   // cellStyles — ამის გარეშე !cols (სიგანეები) არ იკითხება
@@ -30,9 +31,13 @@ export async function readWorkbook(file: File): Promise<SheetData[]> {
   return book.SheetNames.map((name) => {
     const sheet = book.Sheets[name];
     const cols = (sheet["!cols"] ?? []) as (ColInfo | undefined)[];
-    const rows = utils.sheet_to_json<unknown[]>(sheet, { header: 1, defval: "" }).map((row) => row.map(toCell));
+    const raw = utils.sheet_to_json<unknown[]>(sheet, { header: 1, defval: "", blankrows: false }).map((row) => row.map(toCell));
+    // მხოლოდ შევსებული სტრიქონები და სვეტები — ცარიელები (ფორმატირებული, მაგრამ უმონაცემო) არ იტვირთება
+    const rows = raw.filter((row) => row.some(isFilled));
     const width = Math.max(0, ...rows.map((r) => r.length));
-    const widths = Array.from({ length: width }, (_, i) => toPx(cols[i]) ?? 0);
-    return { name, rows, widths: widths.some(Boolean) ? widths : undefined };
+    const keep = Array.from({ length: width }, (_, i) => i).filter((i) => rows.some((r) => isFilled(r[i])));
+    const trimmed = rows.map((r) => keep.map((i) => r[i] ?? ""));
+    const widths = keep.map((i) => toPx(cols[i]) ?? 0);
+    return { name, rows: trimmed, widths: widths.some(Boolean) ? widths : undefined };
   });
 }

@@ -111,7 +111,7 @@ export const en: Dictionary = {
     uploadNote: "Upload",
     historyLink: "Version history",
     saveModal: { title: "Save version", note: "Note (optional)", placeholder: "e.g. prices updated", submit: "Save" },
-    scope: { label: "Where to search", file: "This file", all: "All files" },
+    scope: { all: "All files" },
     globalSearch: {
       hint: { title: "Search all files", text: "Type at least 2 characters — e.g. “cardio” — to see which file has what." },
       none: { title: "Nothing found", text: "Try a shorter word or part of a word." },
@@ -121,6 +121,8 @@ export const en: Dictionary = {
       pick: "Pick for comparison",
       compare: "Compare ({n})",
       clear: "Clear selection",
+      notFound: "Not found",
+      summary: "“{q}” appears in {n} file(s):",
       compareTitle: "Comparison",
     },
     folderModal: { title: "New folder", name: "Folder name", placeholder: "Enter a folder name", submit: "Create" },

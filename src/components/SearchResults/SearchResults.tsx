@@ -2,12 +2,16 @@ import { fill } from "@/i18n/fill";
 import styles from "./SearchResults.module.scss";
 import type { SearchResultsProps } from "./SearchResults.types";
 
-// ყველა ფაილში ძებნის შედეგები — ფაილისა და ფურცლის მიხედვით
-export function SearchResults({ groups, picked, onTogglePick, onOpen, t }: SearchResultsProps) {
+// ყველა ფაილში ძებნა: შეჯამება + ფაილები, თითო სტრიქონში მხოლოდ ნაპოვნი უჯრა
+export function SearchResults({ groups, query, missing, picked, onTogglePick, onOpen, t }: SearchResultsProps) {
+  const files = [...new Set(groups.map((g) => g.fileName))];
   return (
     <div className={styles.results}>
+      <p className={styles.summary}>
+        {fill(t.summary, { q: query.trim(), n: files.length })} <strong>{files.join(", ")}</strong>
+      </p>
       {groups.map((g) => (
-        <section key={`${g.fileId}:${g.sheetIndex}`} className={styles.group}>
+        <section key={`${g.fileId}:${g.sheetIndex}`} className={`${styles.group} ${styles.found}`}>
           <header className={styles.head}>
             <button type="button" className={styles.file} onClick={() => onOpen(g)} title={t.open}>
               {g.fileName}
@@ -27,18 +31,20 @@ export function SearchResults({ groups, picked, onTogglePick, onOpen, t }: Searc
                 />
                 <button type="button" className={styles.cells} onClick={() => onOpen(g)}>
                   <span className={styles.n}>{hit.n}</span>
-                  {hit.cells.map((v, i) =>
-                    v === "" ? null : (
-                      <span key={i} className={[styles.cell, typeof v === "number" && styles.number].filter(Boolean).join(" ")}>
-                        {String(v)}
-                      </span>
-                    ),
-                  )}
+                  <span className={styles.cell} title={hit.match}>{hit.match}</span>
                 </button>
               </li>
             ))}
           </ul>
           {g.total > g.hits.length && <p className={styles.more}>{fill(t.more, { n: g.hits.length, total: g.total })}</p>}
+        </section>
+      ))}
+      {missing.map((m) => (
+        <section key={m.fileId} className={`${styles.group} ${styles.missing}`}>
+          <header className={styles.head}>
+            <span className={styles.file}>{m.fileName}</span>
+            <span className={styles.count}>{t.notFound}</span>
+          </header>
         </section>
       ))}
     </div>

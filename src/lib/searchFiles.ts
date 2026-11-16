@@ -12,6 +12,8 @@ interface SearchHit {
   /** Excel-ის სტრიქონი (1-დან) */
   n: number;
   cells: CellValue[];
+  /** უჯრა, რომელშიც ტექსტი მოიძებნა — მოკლე ჩვენებისთვის */
+  match: string;
 }
 
 export interface SearchGroup {
@@ -41,9 +43,10 @@ export function searchFiles(sources: SearchSource[], query: string): SearchGroup
       const hits: SearchHit[] = [];
       let total = 0;
       body.forEach((cells, i) => {
-        if (!cells.some((v) => String(v).toLowerCase().includes(q))) return;
+        const match = cells.find((v) => String(v).toLowerCase().includes(q));
+        if (match === undefined) return;
         total++;
-        if (hits.length < MAX_PER_GROUP) hits.push({ key: `${src.fileId}:${sheetIndex}:${i + 2}`, n: i + 2, cells });
+        if (hits.length < MAX_PER_GROUP) hits.push({ key: `${src.fileId}:${sheetIndex}:${i + 2}`, n: i + 2, cells, match: String(match) });
       });
       if (total) groups.push({ fileId: src.fileId, fileName: src.fileName, sheetIndex, sheetName: sheet.name, header, hits, total });
     });

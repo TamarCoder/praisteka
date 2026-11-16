@@ -14,10 +14,31 @@
   overflow-y: auto;
 }
 
+.summary {
+  margin: 0;
+  color: c(ink);
+  @include text(body);
+
+  strong { color: c(ok); }
+}
+
 .group {
   border: 1px solid c(line);
   border-radius: $radius-lg;
   overflow: hidden;
+}
+
+// მოიძებნა — მწვანე, არ მოიძებნა — წითელი
+.found {
+  border-color: c(ok);
+  .head { background: color-mix(in srgb, c(ok) 14%, c(paper)); }
+}
+
+.missing {
+  border-color: c(err);
+  .head { background: color-mix(in srgb, c(err) 14%, c(paper)); }
+  .file { cursor: default; text-decoration: none; }
+  .count { color: c(err); }
 }
 
 .head {
@@ -107,13 +128,7 @@
 
 .cell {
   min-width: 0;
-  max-width: 320px;
   @include truncate;
-}
-
-.number {
-  flex: none;
-  @include text(mono);
 }
 
 .more {
