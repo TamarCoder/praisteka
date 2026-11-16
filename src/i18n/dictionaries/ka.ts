@@ -128,7 +128,7 @@ export const ka = {
       compare: "შედარება ({n})",
       clear: "მონიშვნის მოხსნა",
       notFound: "არ მოიძებნა",
-      summary: "„{q}“ ფიქსირდება {n} ფაილში:",
+      summary: "„{q}“ ფიქსირდება {n} ფაილში",
       compareTitle: "შედარება",
     },
     folderModal: { title: "ახალი ფოლდერი", name: "ფოლდერის სახელი", placeholder: "შეიყვანე ფოლდერის სახელი", submit: "შექმნა" },

@@ -129,7 +129,7 @@ export const en: Dictionary = {
       compare: "Compare ({n})",
       clear: "Clear selection",
       notFound: "Not found",
-      summary: "“{q}” appears in {n} file(s):",
+      summary: "“{q}” appears in {n} file(s)",
       compareTitle: "Comparison",
     },
     folderModal: { title: "New folder", name: "Folder name", placeholder: "Enter a folder name", submit: "Create" },

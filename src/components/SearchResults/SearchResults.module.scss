@@ -19,10 +19,17 @@
   color: c(ink);
   @include text(body);
 
-  strong { color: c(ok); }
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+  align-items: start;
+  gap: sp(4);
 }
 
 .group {
+  min-width: 0;
   border: 1px solid c(line);
   border-radius: $radius-lg;
   overflow: hidden;
