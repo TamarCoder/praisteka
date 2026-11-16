@@ -6,6 +6,8 @@
 $font-serif: var(--font-serif), 'Noto Serif Georgian', serif;          // სათაურები
 $font-sans: var(--font-sans), 'Noto Sans Georgian', system-ui, sans-serif; // ინტერფეისი
 $font-mono: var(--font-mono), 'JetBrains Mono', monospace;            // ციფრები, თარიღები, კოდები
+// iPhone Safari 16px-ზე პატარა ველზე ფოკუსისას გვერდს ადიდებს
+$text-input-touch: 16px;
 
 // (ოჯახი, წონა, ზომა, ხაზის სიმაღლე)
 $text: (

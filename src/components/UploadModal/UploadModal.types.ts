@@ -16,8 +16,6 @@ export interface UploadModalProps {
   t: Dictionary["dashboard"];
   /** კალენდრის ტექსტები (ისტორიის გვერდის იგივე კალენდარი) */
   calendar: DateRangePickerProps["labels"];
-  /** არსებული კომპანიები — მინიშნებისთვის */
-  companyNames: string[];
   defaultCompany?: string;
   /** პირველი ვარიანტი — „ფოლდერის გარეშე“ (value "") */
   folders: SelectOption[];

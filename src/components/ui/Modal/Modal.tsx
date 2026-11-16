@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId } from "react";
+import { useEffect, useId, useRef } from "react";
 import { createPortal } from "react-dom";
 import styles from "./Modal.module.scss";
 import { ModalSize, type ModalProps } from "./Modal.types";
@@ -16,6 +16,24 @@ export function Modal({
   className,
 }: ModalProps) {
   const titleId = useId();
+  const overlayRef = useRef<HTMLDivElement>(null);
+
+  // iPhone: კლავიატურა fixed ფანჯარას არ სწევს — ხილული ნაწილის მიხედვით ქვემოდან ვუმატებთ ადგილს
+  useEffect(() => {
+    const vv = window.visualViewport;
+    if (!open || !vv) return;
+    const update = () => {
+      const keyboard = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
+      overlayRef.current?.style.setProperty("--keyboard", `${keyboard}px`);
+    };
+    update();
+    vv.addEventListener("resize", update);
+    vv.addEventListener("scroll", update);
+    return () => {
+      vv.removeEventListener("resize", update);
+      vv.removeEventListener("scroll", update);
+    };
+  }, [open]);
 
   useEffect(() => {
     if (!open) return;
@@ -29,7 +47,7 @@ export function Modal({
 
   // body-ში: მშობლის transform/backdrop-filter-მა fixed ფონი არ უნდა შეზღუდოს
   return createPortal(
-    <div className={styles.overlay} onClick={onClose}>
+    <div ref={overlayRef} className={styles.overlay} onClick={onClose}>
       <div role="dialog" aria-modal="true" aria-labelledby={titleId} className={cls} onClick={(e) => e.stopPropagation()}>
         <div className={styles.header}>
           <h2 id={titleId} className={styles.title}>

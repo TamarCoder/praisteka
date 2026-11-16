@@ -5,7 +5,7 @@ import { createPortal } from "react-dom";
 import { StateIcon } from "@/components/StateIcons/StateIcons";
 import { Button } from "@/components/ui/Button/Button";
 import { ButtonSize, ButtonVariant } from "@/components/ui/Button/Button.types";
-import { useBelowDesktop } from "@/hooks/useBelowDesktop";
+import { useBelowDesktop, useElementById } from "@/hooks/useBelowDesktop";
 import { Input } from "@/components/ui/Input/Input";
 import { InputVariant } from "@/components/ui/Input/Input.types";
 import styles from "./FileHeader.module.scss";
@@ -15,7 +15,7 @@ import type { FileHeaderProps } from "./FileHeader.types";
 export function FileHeader({ query, onQueryChange, placeholder, searchLabel, disabled, actions, scope }: FileHeaderProps) {
   // ტაბლეტი/მობილური: ღილაკები ზედა ზოლში, ლოგოს გვერდით
   const below = useBelowDesktop();
-  const slot = below && typeof document !== "undefined" ? document.getElementById("app-bar-actions") : null;
+  const slot = useElementById("app-bar-actions", below);
   // ზედა ზოლში 🔍: დაჭერით ძებნა რბილად ჩამოიშლება; ტექსტი თუ წერია — ღიად რჩება
   const [searchOpen, setSearchOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);

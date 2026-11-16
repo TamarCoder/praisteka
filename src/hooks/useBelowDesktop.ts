@@ -11,3 +11,17 @@ const subscribe = (change: () => void) => {
 
 export const useBelowDesktop = () =>
   useSyncExternalStore(subscribe, () => window.matchMedia(QUERY).matches, () => false);
+
+/** ელემენტი id-ით; ზოლი მოგვიანებით იტვირთება (ჯერ ჩარჩო), ამიტომ DOM-ს ვუყურებთ */
+export function useElementById(id: string, enabled: boolean): HTMLElement | null {
+  const el = useSyncExternalStore(
+    (change) => {
+      const observer = new MutationObserver(change);
+      observer.observe(document.body, { childList: true, subtree: true });
+      return () => observer.disconnect();
+    },
+    () => document.getElementById(id),
+    () => null,
+  );
+  return enabled ? el : null;
+}

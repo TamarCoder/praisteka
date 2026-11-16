@@ -50,3 +50,21 @@ a {
 // scroll ყველგან მუშაობს, ზოლი არსად ჩანს
 * { scrollbar-width: none; }
 *::-webkit-scrollbar { display: none; }
+
+// ტელეფონი: ველზე დაჭერისას ზუმი არ ხდება (16px), დაჭერის ფერადი ლაქა არ ჩანს
+@media (pointer: coarse) {
+  input, textarea, select { font-size: $text-input-touch !important; }
+}
+* { -webkit-tap-highlight-color: transparent; }
+
+// ველები წერისას და ავტოშევსებისას ერთი ფერისაა — iOS/Chrome-ის ყვითელი/ლურჯი ფონი და სისტემური სტილი გამორთულია
+input, textarea, select { -webkit-appearance: none; appearance: none; }
+input[type="checkbox"], input[type="radio"] { -webkit-appearance: auto; appearance: auto; }
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill {
+  -webkit-text-fill-color: c(ink);
+  caret-color: c(ink);
+  transition: background-color 600000s 0s;
+}

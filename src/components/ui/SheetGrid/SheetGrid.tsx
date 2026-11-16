@@ -206,6 +206,9 @@ export function SheetGrid({ columns, widths, rows, selected, onSelect, sort, onS
               >
                 {isEdit ? (
                   <input
+                    autoComplete="off"
+                    autoCorrect="off"
+                    spellCheck={false}
                     autoFocus
                     className={styles.editor}
                     value={editing.draft}

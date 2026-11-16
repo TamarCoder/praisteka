@@ -18,9 +18,8 @@ import styles from "./UploadModal.module.scss";
 import type { UploadModalProps } from "./UploadModal.types";
 
 // 1 App:28-46
-export function UploadModal({ open, onClose, t, calendar, companyNames, defaultCompany = "", folders, defaultFolder = "", onSubmit }: UploadModalProps) {
+export function UploadModal({ open, onClose, t, calendar, defaultCompany = "", folders, defaultFolder = "", onSubmit }: UploadModalProps) {
   const formId = useId();
-  const listId = useId();
   const [formError, setFormError] = useState<string>();
   const { register, control, handleSubmit, reset, formState } = useForm<UploadValues>({
     resolver: zodResolver(createUploadSchema(t.errors)),
@@ -66,8 +65,6 @@ export function UploadModal({ open, onClose, t, calendar, companyNames, defaultC
         <div className={styles.row}>
         <Field label={t.uploadModal.company} error={errors.company?.message}>
           <Input
-            list={listId}
-            autoComplete="off"
             placeholder={t.uploadModal.companyPlaceholder}
             invalid={!!errors.company}
             {...register("company", clearError)}
@@ -81,11 +78,6 @@ export function UploadModal({ open, onClose, t, calendar, companyNames, defaultC
           />
         </Field>
         </div>
-        <datalist id={listId}>
-          {companyNames.map((name) => (
-            <option key={name} value={name} />
-          ))}
-        </datalist>
         <Field label={t.uploadModal.date} error={errors.effectiveFrom?.message}>
           <Controller
             control={control}

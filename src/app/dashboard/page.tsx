@@ -326,7 +326,6 @@ export default function DashboardPage() {
         onClose={() => setUploadOpen(false)}
         t={t}
         calendar={{ ...dictionaries[locale].history.calendar, placeholder: t.uploadModal.datePlaceholder }}
-        companyNames={companies.map((c) => c.name)}
         defaultCompany={company?.name}
         folders={[{ value: "", label: t.uploadModal.noFolder }, ...folders.map((f) => ({ value: f.id, label: f.name }))]}
         defaultFolder={version?.folderId ?? ""}

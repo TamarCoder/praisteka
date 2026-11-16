@@ -4,7 +4,18 @@ import { InputVariant, type InputProps } from "./Input.types";
 export function Input({ variant = InputVariant.Default, invalid = false, className, ...rest }: InputProps) {
   const isSearch = variant === InputVariant.Search;
   const cls = [styles.input, styles[variant], invalid && styles.invalid, !isSearch && className].filter(Boolean).join(" ");
-  const input = <input className={cls} aria-invalid={invalid || undefined} {...rest} />;
+  // არცერთ ველში შემოთავაზებები: ბრაუზერის ავტოშევსება, iOS-ის ავტოკორექცია და დიდი ასო — გამორთულია
+  const input = (
+    <input
+      className={cls}
+      aria-invalid={invalid || undefined}
+      {...rest}
+      autoComplete="off"
+      autoCorrect="off"
+      autoCapitalize="off"
+      spellCheck={false}
+    />
+  );
 
   if (!isSearch) return input;
 
