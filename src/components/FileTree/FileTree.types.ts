@@ -20,6 +20,9 @@ export interface FileTreeProps {
   onSelect: (id: string) => void;
   /** არ არის — წაშლის ღილაკი არ ჩანს */
   onDelete?: (id: string) => void;
+  /** ფოლდერში გადატანა; არ არის — ღილაკი არ ჩანს */
+  onMove?: (id: string) => void;
+  moveLabel?: string;
   /** წაშლის ღილაკის წარწერა ეკრანის წამკითხველისთვის */
   deleteLabel?: string;
   emptyText: string;

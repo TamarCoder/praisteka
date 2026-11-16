@@ -129,3 +129,10 @@
   border: 1px dashed c(line);
   border-radius: $radius-lg;
 }
+
+// გადატანა — წაშლის მარცხნივ
+.move {
+  right: sp(1) + 28px;
+
+  &:hover { color: c(acc); }
+}

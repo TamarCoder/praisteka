@@ -27,10 +27,17 @@ export function useFileMutations() {
     await refresh();
   };
 
+  /** ფოლდერში გადატანა; null — ფოლდერიდან გამოტანა */
+  const moveFile = async (fileId: string, folderId: string | null) => {
+    const file = await filesApi.update(fileId, { folderId });
+    await mutate(API_ENDPOINTS.file(fileId), file, { revalidate: false });
+    await refresh();
+  };
+
   const deleteAll = async () => {
     await filesApi.deleteAll();
     await refresh();
   };
 
-  return { uploadFile, deleteFile, deleteAll };
+  return { uploadFile, deleteFile, moveFile, deleteAll };
 }

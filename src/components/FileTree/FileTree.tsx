@@ -4,7 +4,7 @@ import styles from "./FileTree.module.scss";
 import type { FileTreeProps, TreeFile } from "./FileTree.types";
 
 // ფოლდერები (გაშლადი) და ფოლდერის გარეშე ფაილები
-export function FileTree({ label, folders, files, activeId, onSelect, onDelete, deleteLabel, emptyText, emptyHint }: FileTreeProps) {
+export function FileTree({ label, folders, files, activeId, onSelect, onDelete, deleteLabel, onMove, moveLabel, emptyText, emptyHint }: FileTreeProps) {
   const item = (f: TreeFile) => {
     const active = f.id === activeId;
     return (
@@ -18,6 +18,11 @@ export function FileTree({ label, folders, files, activeId, onSelect, onDelete, 
           <span className={styles.name}>{f.name}</span>
           <span className={styles.meta}>{f.meta}</span>
         </button>
+        {onMove && (
+          <button type="button" className={`${styles.delete} ${styles.move}`} aria-label={`${moveLabel}: ${f.name}`} title={moveLabel} onClick={() => onMove(f.id)}>
+            📁
+          </button>
+        )}
         {onDelete && (
           <button type="button" className={styles.delete} aria-label={`${deleteLabel}: ${f.name}`} title={deleteLabel} onClick={() => onDelete(f.id)}>
             🗑

@@ -50,9 +50,8 @@
 
 .popover {
   @include enter;
-  position: absolute;
-  top: calc(100% + #{sp(1)});
-  right: 0;
+  // body-ში (portal), fixed — top/left/bottom ინლაინ, ველის მიხედვით; მოდალზე (z 10) მაღლა
+  position: fixed;
   z-index: 30;
   width: $w-calendar;
   padding: sp(3);
@@ -149,11 +148,3 @@
 // ფორმაში შეცდომა
 .invalid { border-color: c(err); }
 
-// ერთი თარიღი ფორმაში (მოდალში): კალენდარი ველის ქვეშ იშლება, მთელ სიგანეზე —
-// მოდალის scroll-ი აღარ ჭრის და ფოლდერის ველს აღარ ფარავს
-.inline {
-  position: static;
-  width: 100%;
-  margin-top: sp(2);
-  box-shadow: none;
-}

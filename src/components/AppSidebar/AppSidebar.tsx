@@ -6,6 +6,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/Button/Button";
 import { ButtonSize, ButtonVariant } from "@/components/ui/Button/Button.types";
 import { DeleteModal } from "@/components/DeleteModal/DeleteModal";
+import { MoveModal } from "@/components/MoveModal/MoveModal";
 import { LanguageSwitcher } from "@/components/ui/LanguageSwitcher/LanguageSwitcher";
 import { Logo } from "@/components/ui/Logo/Logo";
 import { LogoSize } from "@/components/ui/Logo/Logo.types";
@@ -31,12 +32,13 @@ export function AppSidebar() {
   const { data: files } = useFiles();
   const { data: folders } = useFolders();
   const { data: companies } = useCompanies();
-  const { deleteFile } = useFileMutations();
+  const { deleteFile, moveFile } = useFileMutations();
   const tree = useFileTree(files ?? [], folders ?? [], companies ?? []);
   const { locale, theme, setLocale, setTheme, sidebarCollapsed: collapsed, toggleSidebar } = usePreferencesStore();
   const systemTheme = useSystemTheme();
   const { prefs, nav, dashboard: t } = dictionaries[locale];
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [moveId, setMoveId] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(null);
   // ტაბლეტი/მობილური: ☰ მენიუ, როგორც ლენდინგზე (LandingTopBar)
   const [menuOpen, setMenuOpen] = useState(false);
@@ -54,6 +56,19 @@ export function AppSidebar() {
   const activeId = pathname === "/dashboard" ? (fileParam ?? undefined) : undefined;
   const label = collapsed ? prefs.expand : prefs.collapse;
   const toDelete = files.find((f) => f.id === deleteId);
+  const toMove = files.find((f) => f.id === moveId);
+
+  const move = async (folderId: string) => {
+    if (!toMove) return;
+    try {
+      await moveFile(toMove.id, folderId || null);
+    } catch {
+      setToast(t.errors.save);
+      return;
+    }
+    setMoveId(null);
+    setToast(fill(t.moved, { name: toMove.fileName }));
+  };
 
   const removeFile = async () => {
     if (!toDelete) return;
@@ -97,6 +112,8 @@ export function AppSidebar() {
             router.push(`/dashboard?file=${id}`);
           }}
           onDelete={setDeleteId}
+          onMove={folders.length ? setMoveId : undefined}
+          moveLabel={t.moveFile}
           deleteLabel={t.deleteFile}
           emptyText={t.noFiles}
           emptyHint={t.noFilesHint}
@@ -134,6 +151,14 @@ export function AppSidebar() {
           </button>
         </div>
       </div>
+      <MoveModal
+        name={toMove?.fileName ?? null}
+        current={toMove?.folderId ?? ""}
+        folders={[{ value: "", label: t.uploadModal.noFolder }, ...folders.map((f) => ({ value: f.id, label: f.name }))]}
+        onClose={() => setMoveId(null)}
+        onConfirm={move}
+        t={t}
+      />
       <DeleteModal name={toDelete?.fileName ?? null} onClose={() => setDeleteId(null)} onConfirm={removeFile} t={t} />
       <Toast message={toast} onClose={() => setToast(null)} className={styles.toast} />
     </aside>
