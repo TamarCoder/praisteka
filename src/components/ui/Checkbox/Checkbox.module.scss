@@ -1,0 +1,22 @@
+@use 'tokens/colors' as *;
+@use 'tokens/typography' as *;
+@use 'tokens/spacing' as *;
+
+.wrap {
+  @include text(small);
+  display: inline-flex;
+  align-items: center;
+  gap: sp(2);
+  color: c(ink);
+  cursor: pointer;
+  user-select: none;
+}
+
+.box {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  accent-color: c(acc);
+  cursor: pointer;
+}

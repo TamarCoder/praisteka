@@ -63,6 +63,7 @@ export const en: Dictionary = {
     },
     submit: { login: "Log in", loggingIn: "Logging in…", register: "Create account", registering: "Creating…" },
     forgot: "Forgot password?",
+    remember: "Remember me",
     done: {
       login: { title: "You are logged in", text: "The main screen will open here." },
       forgot: { title: "Link sent", text: "A password reset link was sent to your email." },
