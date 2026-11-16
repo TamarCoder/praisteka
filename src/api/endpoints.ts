@@ -11,6 +11,7 @@ export const API_ENDPOINTS = {
   folders: "/api/folders",
   folder: (folderId: string) => `/api/folders/${id(folderId)}`,
   files: "/api/files",
+  filesSearch: (q: string) => `/api/files/search?q=${id(q)}`,
   file: (fileId: string) => `/api/files/${id(fileId)}`,
   snapshots: (fileId: string) => `/api/files/${id(fileId)}/snapshots`,
   snapshot: (fileId: string, snapshotId: string) =>

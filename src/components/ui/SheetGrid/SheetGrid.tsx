@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type CSSProperties, type KeyboardEvent, type PointerEvent } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type KeyboardEvent, type PointerEvent } from "react";
 import { columnLetter } from "./columnLetter";
 import styles from "./SheetGrid.module.scss";
 import { SortDir, type SheetGridProps } from "./SheetGrid.types";
@@ -20,6 +20,9 @@ const MAX_FIT_WIDTH = 640;
 /** ავტო-სიგანე: ~სიმბოლოს სიგანე px-ში + padding */
 const CHAR_PX = 8;
 const FIT_PADDING = 28;
+/** ვირტუალიზაცია: სტრიქონის სიმაღლე (ზუსტი — პირველი სტრიქონიდან იზომება) და ზედმეტი სტრიქონები ეკრანის ზემოთ/ქვემოთ */
+const ROW_GUESS = 37;
+const OVERSCAN = 12;
 
 interface Editing {
   row: number;
@@ -33,6 +36,33 @@ export function SheetGrid({ columns, widths, rows, selected, onSelect, sort, onS
   const [drag, setDrag] = useState<{ col: number; width: number } | null>(null);
   const [editing, setEditing] = useState<Editing | null>(null);
   const cls = [styles.grid, className].filter(Boolean).join(" ");
+  // მხოლოდ ხილული სტრიქონები იხატება — ათასობით სტრიქონზეც სწრაფია
+  const [port, setPort] = useState({ top: 0, height: 800, head: 0, row: ROW_GUESS });
+  const measure = () => {
+    const el = ref.current;
+    if (!el) return;
+    const head = el.querySelector<HTMLElement>(`.${styles.head}`);
+    const first = el.querySelector<HTMLElement>("[data-row]");
+    setPort((p) => {
+      const next = {
+        top: el.scrollTop,
+        height: el.clientHeight,
+        head: head ? head.offsetTop + head.offsetHeight : p.head,
+        row: first?.offsetHeight || p.row,
+      };
+      return next.top === p.top && next.height === p.height && next.head === p.head && next.row === p.row ? p : next;
+    });
+  };
+  useLayoutEffect(measure);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+  const start = Math.max(0, Math.floor((port.top - port.head) / port.row) - OVERSCAN);
+  const end = Math.min(rows.length, Math.ceil((port.top + port.height) / port.row) + OVERSCAN);
 
   const widthOf = (i: number) => (drag?.col === i ? drag.width : widths?.[i] || DEFAULT_COL_WIDTH);
   // ყველა სტრიქონს ერთი და იგივე სვეტები, რომ ერთ ხაზზე იდგეს
@@ -40,8 +70,13 @@ export function SheetGrid({ columns, widths, rows, selected, onSelect, sort, onS
 
   // მონიშნული უჯრა ყოველთვის ჩანს
   useEffect(() => {
-    if (!selected) return;
-    ref.current?.querySelector(`[data-cell="${selected.row}-${selected.col}"]`)?.scrollIntoView({ block: "nearest", inline: "nearest" });
+    const el = ref.current;
+    if (!selected || !el) return;
+    const cell = el.querySelector(`[data-cell="${selected.row}-${selected.col}"]`);
+    // სტრიქონი ჯერ არ არის დახატული — ჯერ მასთან გადავდივართ, დახატვის შემდეგ ეფექტი ისევ არ საჭიროებს
+    if (cell) cell.scrollIntoView({ block: "nearest", inline: "nearest" });
+    else el.scrollTop = port.head + selected.row * port.row - el.clientHeight / 2;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selected]);
 
   const startResize = (col: number) => (e: PointerEvent<HTMLSpanElement>) => {
@@ -123,7 +158,7 @@ export function SheetGrid({ columns, widths, rows, selected, onSelect, sort, onS
   const arrow = (col: number) => (sort?.col !== col ? "▾" : sort.dir === SortDir.Asc ? "↑" : "↓");
 
   return (
-    <div ref={ref} className={cls} style={template} tabIndex={0} role="grid" aria-label={label} onKeyDown={onKeyDown}>
+    <div ref={ref} className={cls} style={template} tabIndex={0} role="grid" aria-label={label} aria-rowcount={rows.length + 1} onKeyDown={onKeyDown} onScroll={measure}>
       <div className={`${styles.row} ${styles.letters}`} role="row">
         <span className={styles.corner} />
         {columns.map((_, i) => (
@@ -149,8 +184,11 @@ export function SheetGrid({ columns, widths, rows, selected, onSelect, sort, onS
           </button>
         ))}
       </div>
-      {rows.map((row, r) => (
-        <div key={row.n} className={styles.row} role="row">
+      {start > 0 && <div aria-hidden style={{ height: start * port.row }} />}
+      {rows.slice(start, end).map((row, i) => {
+        const r = start + i;
+        return (
+        <div key={row.n} className={styles.row} role="row" data-row>
           <span className={styles.num}>{row.n}</span>
           {columns.map((_, c) => {
             const value = row.cells[c] ?? "";
@@ -182,7 +220,9 @@ export function SheetGrid({ columns, widths, rows, selected, onSelect, sort, onS
             );
           })}
         </div>
-      ))}
+        );
+      })}
+      {end < rows.length && <div aria-hidden style={{ height: (rows.length - end) * port.row }} />}
       {rows.length === 0 && <div className={styles.empty}>{empty}</div>}
     </div>
   );

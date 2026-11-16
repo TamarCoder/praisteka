@@ -1,7 +1,6 @@
 import { useSWRConfig } from "swr";
 import { API_ENDPOINTS } from "@/api/endpoints";
 import { filesApi } from "@/api/files";
-import { snapshotsApi } from "@/api/snapshots";
 import { SNAPSHOTS_KEY } from "@/hooks/api/useAllSnapshots";
 import type { CreateFileRequest } from "@/types/api";
 
@@ -15,8 +14,8 @@ export function useFileMutations() {
 
   /** ატვირთვა = ფაილი + ვერსია 1 */
   const uploadFile = async (input: CreateFileRequest, firstNote: string) => {
-    const file = await filesApi.create(input);
-    await snapshotsApi.create(file.id, { note: firstNote });
+    // ფაილი და ვერსია 1 — ერთ მოთხოვნაში
+    const file = await filesApi.create({ ...input, note: firstNote });
     await mutate(API_ENDPOINTS.file(file.id), file, { revalidate: false });
     await refresh();
     return file;

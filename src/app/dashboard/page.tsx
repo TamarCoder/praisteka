@@ -21,7 +21,7 @@ import { StateIcon } from "@/components/StateIcons/StateIcons";
 import { Skeleton } from "@/components/ui/Skeleton/Skeleton";
 import { Toast } from "@/components/ui/Toast/Toast";
 import { reportError } from "@/api/errors";
-import { useAllFileSheets } from "@/hooks/api/useAllFileSheets";
+import { useFileSearch } from "@/hooks/api/useFileSearch";
 import { useCompanies } from "@/hooks/api/useCompanies";
 import { useFileMutations } from "@/hooks/api/useFileMutations";
 import { useFiles } from "@/hooks/api/useFiles";
@@ -33,7 +33,7 @@ import { useSheetView } from "@/hooks/useSheetView";
 import { dictionaries } from "@/i18n/dictionaries";
 import { fill } from "@/i18n/fill";
 import { exportCsv } from "@/lib/exportCsv";
-import { MIN_QUERY, searchFiles, type SearchGroup } from "@/lib/searchFiles";
+import { MIN_QUERY, type SearchGroup } from "@/lib/searchFiles";
 import { formatDate } from "@/lib/formatDate";
 import { readWorkbook } from "@/lib/readWorkbook";
 import { ErrorAction } from "@/types/api";
@@ -94,10 +94,10 @@ export default function DashboardPage() {
   }
 
   const view = useSheetView(sheet, locale, `${version?.id}:${activeSheet}`, seedQuery);
-  const all = useAllFileSheets(versions ?? [], searchAll, version && sheets ? { id: version.id, sheets } : undefined);
-  const groups = searchAll ? searchFiles(all.sources, globalQuery) : [];
+  const search = useFileSearch(globalQuery, searchAll);
+  const groups = search.groups;
   // ფაილები, სადაც ჩაწერილი ტექსტი არ მოიძებნა — წითლად
-  const missing = groups.length ? all.sources.filter((s) => !groups.some((g) => g.fileId === s.fileId)) : [];
+  const missing = groups.length ? (versions ?? []).filter((v) => !groups.some((g) => g.fileId === v.id)).map((v) => ({ fileId: v.id, fileName: v.fileName })) : [];
 
   const togglePick = (key: string) => setPicked((p) => (p.includes(key) ? p.filter((k) => k !== key) : [...p, key]));
 
@@ -261,7 +261,7 @@ export default function DashboardPage() {
         {searchAll && !(home && globalQuery.trim().length < MIN_QUERY) ? (
           globalQuery.trim().length < MIN_QUERY ? (
             <EmptyState icon={StateIcon.pick} title={t.globalSearch.hint.title} text={t.globalSearch.hint.text} className={styles.state} />
-          ) : all.loading ? (
+          ) : search.loading ? (
             <Skeleton className={styles.loading} />
           ) : groups.length ? (
             <SearchResults groups={groups} query={globalQuery} missing={missing} picked={picked} onTogglePick={togglePick} onOpen={openResult} t={t.globalSearch} />

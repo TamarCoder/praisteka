@@ -6,9 +6,12 @@ import type {
   FileSummary,
   UpdateFileRequest,
 } from "@/types/api";
+import type { SearchGroup } from "@/lib/searchFiles";
 
 export const filesApi = {
   list: () => http.get<FileSummary[]>(API_ENDPOINTS.files),
+  /** ძებნა ყველა ფაილში სერვერზე — ბრაუზერი ფაილებს აღარ ჩამოტვირთავს */
+  search: (q: string) => http.get<SearchGroup[]>(API_ENDPOINTS.filesSearch(q)),
   get: (fileId: string) => http.get<FileDetail>(API_ENDPOINTS.file(fileId)),
   create: (input: CreateFileRequest) =>
     http.post<FileDetail>(API_ENDPOINTS.files, input),

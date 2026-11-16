@@ -80,6 +80,8 @@ export interface CreateFileRequest {
   fileName: string;
   effectiveFrom: string;
   folderId?: string;
+  /** ვერსია 1-ის შენიშვნა — იმავე მოთხოვნაში */
+  note?: string;
   sheets: SheetData[];
 }
 
