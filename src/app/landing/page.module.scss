@@ -59,11 +59,3 @@
   align-items: center;
   gap: sp(2);
 }
-
-// უპირატესობის ბარათები — მხოლოდ მობილურზე
-.features {
-  display: none;
-  padding-bottom: sp(6);
-
-  @include down(tablet) { display: flex; }
-}

@@ -5,7 +5,6 @@ import { LanguageSwitcher } from "@/components/ui/LanguageSwitcher/LanguageSwitc
 import { ThemeSwitcher } from "@/components/ui/ThemeSwitcher/ThemeSwitcher";
 import { LandingAbout } from "@/components/landing/LandingAbout/LandingAbout";
 import { LandingBackground } from "@/components/landing/LandingBackground/LandingBackground";
-import { LandingFeatures } from "@/components/landing/LandingFeatures/LandingFeatures";
 import { LandingHero } from "@/components/landing/LandingHero/LandingHero";
 import { LandingScene } from "@/components/landing/LandingScene/LandingScene";
 import { LandingTopBar } from "@/components/landing/LandingTopBar/LandingTopBar";
@@ -97,7 +96,6 @@ export default function LandingPage() {
           secondaryAction={{ label: t.hero.demo, href: "/dashboard" }}
         />
         <LandingScene className={styles.scene} plates={plates} />
-        <LandingFeatures className={styles.features} items={t.features} />
       </div>
     </main>
   );
