@@ -4,6 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { AppEmpty } from "@/components/AppEmpty/AppEmpty";
 import { UserMenu } from "@/components/UserMenu/UserMenu";
+import { DeleteModal } from "@/components/DeleteModal/DeleteModal";
 import { FileHeader } from "@/components/FileHeader/FileHeader";
 import { SheetFooter } from "@/components/SheetFooter/SheetFooter";
 import { CompareModal } from "@/components/CompareModal/CompareModal";
@@ -134,6 +135,37 @@ export default function DashboardPage() {
     saveSheet({ ...sheet, rows });
   };
 
+  // სერვისის დამატება: მონიშნული სტრიქონის ქვემოთ, თუ არაფერია მონიშნული — ბოლოში
+  const [pendingRow, setPendingRow] = useState<number | null>(null);
+  const [rowDeleteOpen, setRowDeleteOpen] = useState(false);
+  const selectedRow = view.selected ? view.rows[view.selected.row] : undefined;
+
+  const addRow = () => {
+    if (!sheet) return;
+    const at = selectedRow ? selectedRow.n : sheet.rows.length; // sheet.rows ინდექსი, სადაც ჩაჯდება
+    const width = Math.max(1, sheet.rows[0]?.length ?? 1);
+    const rows = [...sheet.rows.slice(0, at), Array.from({ length: width }, () => ""), ...sheet.rows.slice(at)];
+    view.setQuery("");
+    setPendingRow(at + 1);
+    setToast(fill(t.rowAdded, { n: at + 1 }));
+    saveSheet({ ...sheet, rows });
+  };
+
+  // ახალი სტრიქონი ცხრილში გამოჩნდა — მონიშნე პირველი უჯრა
+  if (pendingRow !== null) {
+    const index = view.rows.findIndex((r) => r.n === pendingRow);
+    if (index >= 0) {
+      setPendingRow(null);
+      view.setSelected({ row: index, col: 0 });
+    }
+  }
+
+  const deleteRow = async () => {
+    if (!sheet || !selectedRow) return;
+    await saveSheet({ ...sheet, rows: sheet.rows.filter((_, i) => i !== selectedRow.n - 1) });
+    setRowDeleteOpen(false);
+  };
+
   const resizeColumn = (col: number, width: number) => {
     if (!sheet) return;
     const widths = Array.from({ length: view.columns.length }, (_, i) => sheet.widths?.[i] ?? 0);
@@ -247,6 +279,16 @@ export default function DashboardPage() {
                   </Button>
                 </>
               )}
+              {!searchAll && sheet ? (
+                <Button size={ButtonSize.Sm} variant={ButtonVariant.Secondary} iconOnly onClick={addRow} title={t.addRow} aria-label={t.addRow}>
+                  {StateIcon.addRow}
+                </Button>
+              ) : null}
+              {!searchAll && selectedRow ? (
+                <Button size={ButtonSize.Sm} variant={ButtonVariant.Ghost} iconOnly onClick={() => setRowDeleteOpen(true)} title={t.deleteRow} aria-label={t.deleteRow}>
+                  {StateIcon.deleteRow}
+                </Button>
+              ) : null}
               {!searchAll && sheets?.length ? (
                 <Button size={ButtonSize.Sm} variant={ButtonVariant.Secondary} iconOnly onClick={() => setSaveOpen(true)} title={t.saveVersion} aria-label={t.saveVersion}>
                   {StateIcon.save}
@@ -288,6 +330,13 @@ export default function DashboardPage() {
           <AppEmpty title={t.empty.title} text={t.empty.text} actionLabel={t.upload} onAction={() => setUploadOpen(true)} />
         ) : (
           <>
+          <DeleteModal
+            name={rowDeleteOpen && selectedRow ? `${selectedRow.n} · ${String(selectedRow.cells.find((c) => String(c).trim()) ?? "")}`.slice(0, 80) : null}
+            onClose={() => setRowDeleteOpen(false)}
+            onConfirm={deleteRow}
+            t={t}
+            texts={t.deleteRowModal}
+          />
           <SheetGrid
             columns={view.columns}
             widths={view.widths}

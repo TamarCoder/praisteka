@@ -48,6 +48,8 @@ export const StateIcon = {
     </>,
   ),
   /** X — მონიშვნის გასუფთავება */
+  addRow: icon(<path d="M12 5v14M5 12h14" />),
+  deleteRow: icon(<path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13" />),
   search: icon(
     <>
       <circle cx="11" cy="11" r="7" />
