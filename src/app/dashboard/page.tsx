@@ -5,6 +5,7 @@ import { useState } from "react";
 import { AppEmpty } from "@/components/AppEmpty/AppEmpty";
 import { UserMenu } from "@/components/UserMenu/UserMenu";
 import { DeleteModal } from "@/components/DeleteModal/DeleteModal";
+import { AddRowModal } from "@/components/AddRowModal/AddRowModal";
 import { FileHeader } from "@/components/FileHeader/FileHeader";
 import { SheetFooter } from "@/components/SheetFooter/SheetFooter";
 import { CompareModal } from "@/components/CompareModal/CompareModal";
@@ -135,34 +136,28 @@ export default function DashboardPage() {
     saveSheet({ ...sheet, rows });
   };
 
-  // სერვისის დამატება: მონიშნული სტრიქონის ქვემოთ, თუ არაფერია მონიშნული — ბოლოში
-  const [pendingRow, setPendingRow] = useState<number | null>(null);
+  // სერვისის დამატება — ფორმით, ფურცლის ბოლოს; წაშლა — ჩეკბოქსებით მონიშნული სტრიქონები
+  const [addRowOpen, setAddRowOpen] = useState(false);
   const [rowDeleteOpen, setRowDeleteOpen] = useState(false);
-  const selectedRow = view.selected ? view.rows[view.selected.row] : undefined;
+  const sheetKey = `${version?.id}:${activeSheet}`;
+  const [checks, setChecks] = useState<{ key: string; rows: number[] }>({ key: "", rows: [] });
+  const checked = checks.key === sheetKey ? checks.rows : [];
+  const toggleCheck = (n: number) =>
+    setChecks({ key: sheetKey, rows: checked.includes(n) ? checked.filter((x) => x !== n) : [...checked, n] });
 
-  const addRow = () => {
+  const addRow = async (values: string[]) => {
     if (!sheet) return;
-    const at = selectedRow ? selectedRow.n : sheet.rows.length; // sheet.rows ინდექსი, სადაც ჩაჯდება
-    const width = Math.max(1, sheet.rows[0]?.length ?? 1);
-    const rows = [...sheet.rows.slice(0, at), Array.from({ length: width }, () => ""), ...sheet.rows.slice(at)];
-    view.setQuery("");
-    setPendingRow(at + 1);
-    setToast(fill(t.rowAdded, { n: at + 1 }));
-    saveSheet({ ...sheet, rows });
+    const row = values.map((v) => (/^-?\d+(\.\d+)?$/.test(v) ? Number(v) : v));
+    await saveSheet({ ...sheet, rows: [...sheet.rows, row] });
+    setToast(fill(t.rowAdded, { n: sheet.rows.length + 1 }));
   };
 
-  // ახალი სტრიქონი ცხრილში გამოჩნდა — მონიშნე პირველი უჯრა
-  if (pendingRow !== null) {
-    const index = view.rows.findIndex((r) => r.n === pendingRow);
-    if (index >= 0) {
-      setPendingRow(null);
-      view.setSelected({ row: index, col: 0 });
-    }
-  }
-
-  const deleteRow = async () => {
-    if (!sheet || !selectedRow) return;
-    await saveSheet({ ...sheet, rows: sheet.rows.filter((_, i) => i !== selectedRow.n - 1) });
+  const deleteRows = async () => {
+    if (!sheet || !checked.length) return;
+    const drop = new Set(checked.map((n) => n - 1));
+    await saveSheet({ ...sheet, rows: sheet.rows.filter((_, i) => !drop.has(i)) });
+    setToast(fill(t.rowsDeleted, { n: checked.length }));
+    setChecks({ key: sheetKey, rows: [] });
     setRowDeleteOpen(false);
   };
 
@@ -280,13 +275,14 @@ export default function DashboardPage() {
                 </>
               )}
               {!searchAll && sheet ? (
-                <Button size={ButtonSize.Sm} variant={ButtonVariant.Secondary} iconOnly onClick={addRow} title={t.addRow} aria-label={t.addRow}>
+                <Button size={ButtonSize.Sm} variant={ButtonVariant.Secondary} iconOnly onClick={() => setAddRowOpen(true)} title={t.addRow} aria-label={t.addRow}>
                   {StateIcon.addRow}
                 </Button>
               ) : null}
-              {!searchAll && selectedRow ? (
-                <Button size={ButtonSize.Sm} variant={ButtonVariant.Ghost} iconOnly onClick={() => setRowDeleteOpen(true)} title={t.deleteRow} aria-label={t.deleteRow}>
+              {!searchAll && checked.length ? (
+                <Button size={ButtonSize.Sm} variant={ButtonVariant.Ghost} onClick={() => setRowDeleteOpen(true)} title={fill(t.deleteRow, { n: checked.length })} aria-label={fill(t.deleteRow, { n: checked.length })}>
                   {StateIcon.deleteRow}
+                  {checked.length}
                 </Button>
               ) : null}
               {!searchAll && sheets?.length ? (
@@ -330,10 +326,11 @@ export default function DashboardPage() {
           <AppEmpty title={t.empty.title} text={t.empty.text} actionLabel={t.upload} onAction={() => setUploadOpen(true)} />
         ) : (
           <>
+          <AddRowModal open={addRowOpen} columns={view.columns} onClose={() => setAddRowOpen(false)} t={t} onSubmit={addRow} />
           <DeleteModal
-            name={rowDeleteOpen && selectedRow ? `${selectedRow.n} · ${String(selectedRow.cells.find((c) => String(c).trim()) ?? "")}`.slice(0, 80) : null}
+            name={rowDeleteOpen ? [...checked].sort((a, b) => a - b).join(", ") : null}
             onClose={() => setRowDeleteOpen(false)}
-            onConfirm={deleteRow}
+            onConfirm={deleteRows}
             t={t}
             texts={t.deleteRowModal}
           />
@@ -347,6 +344,9 @@ export default function DashboardPage() {
             onSort={view.toggleSort}
             onResize={resizeColumn}
             onEdit={editCell}
+            checked={checked}
+            onCheck={toggleCheck}
+            checkLabel={t.checkRow}
             onCopy={(value) => {
               navigator.clipboard?.writeText(String(value)).catch(() => {});
               setToast(fill(t.copied, { value }));

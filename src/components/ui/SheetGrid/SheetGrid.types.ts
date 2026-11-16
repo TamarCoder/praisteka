@@ -42,5 +42,10 @@ export interface SheetGridProps {
   /** როცა rows ცარიელია — ტექსტი ან კომპონენტი */
   empty: ReactNode;
   label?: string;
+  /** მონიშნული სტრიქონები (row.n) — ჩეკბოქსი ნომრის გვერდით; არ არის — ჩეკბოქსი არ ჩანს */
+  checked?: number[];
+  onCheck?: (n: number) => void;
+  /** ჩეკბოქსის წარწერა ეკრანის წამკითხველისთვის, {n} — სტრიქონის ნომერი */
+  checkLabel?: string;
   className?: string;
 }

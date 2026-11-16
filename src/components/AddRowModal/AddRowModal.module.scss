@@ -1,0 +1,17 @@
+@use 'tokens/spacing' as *;
+@use 'tokens/breakpoints' as *;
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: sp(4);
+}
+
+// ველები ორ სვეტად; მობილურზე — ერთ სვეტად
+.fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: sp(3) sp(4);
+
+  @include down(tablet) { grid-template-columns: minmax(0, 1fr); }
+}

@@ -16,7 +16,7 @@
 
 .row {
   display: grid;
-  grid-template-columns: 40px var(--cols);
+  grid-template-columns: var(--num-col, 40px) var(--cols);
   min-width: max-content;
   border-bottom: 1px solid c(line);
 }
@@ -87,6 +87,18 @@
 .corner,
 .num {
   background: c(tab);
+}
+
+.checkable { --num-col: 64px; }
+
+// ჩეკბოქსი წასაშლელი სტრიქონების მოსანიშნად
+.check {
+  width: 14px;
+  height: 14px;
+  margin: 0 sp(1) 0 0;
+  vertical-align: middle;
+  accent-color: c(acc);
+  cursor: pointer;
 }
 
 .num {

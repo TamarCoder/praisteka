@@ -31,11 +31,11 @@ interface Editing {
 }
 
 // 1 App:89-101 — Excel-ის მსგავსი ცხრილი
-export function SheetGrid({ columns, widths, rows, selected, onSelect, sort, onSort, onResize, onEdit, onCopy, empty, label, className }: SheetGridProps) {
+export function SheetGrid({ columns, widths, rows, selected, onSelect, sort, onSort, onResize, onEdit, onCopy, empty, label, checked, onCheck, checkLabel, className }: SheetGridProps) {
   const ref = useRef<HTMLDivElement>(null);
   const [drag, setDrag] = useState<{ col: number; width: number } | null>(null);
   const [editing, setEditing] = useState<Editing | null>(null);
-  const cls = [styles.grid, className].filter(Boolean).join(" ");
+  const cls = [styles.grid, className, onCheck && styles.checkable].filter(Boolean).join(" ");
   // მხოლოდ ხილული სტრიქონები იხატება — ათასობით სტრიქონზეც სწრაფია
   const [port, setPort] = useState({ top: 0, height: 800, head: 0, row: ROW_GUESS });
   const measure = () => {
@@ -189,7 +189,18 @@ export function SheetGrid({ columns, widths, rows, selected, onSelect, sort, onS
         const r = start + i;
         return (
         <div key={row.n} className={styles.row} role="row" data-row>
-          <span className={styles.num}>{row.n}</span>
+          <span className={styles.num}>
+            {onCheck && (
+              <input
+                type="checkbox"
+                className={styles.check}
+                checked={checked?.includes(row.n) ?? false}
+                onChange={() => onCheck(row.n)}
+                aria-label={(checkLabel ?? "{n}").replace("{n}", String(row.n))}
+              />
+            )}
+            {row.n}
+          </span>
           {columns.map((_, c) => {
             const value = row.cells[c] ?? "";
             const isSel = selected?.row === r && selected.col === c;
